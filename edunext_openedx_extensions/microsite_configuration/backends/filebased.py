@@ -6,32 +6,12 @@ import os.path
 
 from django.conf import settings
 
-from microsite_configuration.backends.base import (
-    BaseMicrositeBackend,
-    BaseMicrositeTemplateBackend,
-)
-from microsite_configuration.microsite import get_value as microsite_get_value
-from microsite_configuration.microsite import is_request_in_microsite
+from .base import BaseMicrositeTemplateBackend
+from ..microsite import get_value as microsite_get_value
+from ..microsite import is_request_in_microsite
 
 
-class FilebasedMicrositeBackend(BaseMicrositeBackend):
-    """
-    Microsite backend that reads the microsites definitions
-    from a dictionary called MICROSITE_CONFIGURATION in the settings file.
-    """
-
-    def __init__(self, **kwargs):
-        super(FilebasedMicrositeBackend, self).__init__(**kwargs)
-
-
-class FilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBackend):
-    """
-    Microsite backend that loads templates from filesystem.
-    """
-    pass
-
-
-class EdunextCompatibleFilebasedMicrositeTemplateBackend(FilebasedMicrositeTemplateBackend):
+class EdunextCompatibleFilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBackend):
     """
     Microsite backend that loads templates from filesystem using the configuration
     held before dogwood by edunext
