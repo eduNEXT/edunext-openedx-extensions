@@ -12,7 +12,7 @@ from django.conf import settings
 from django.http import Http404
 
 from opaque_keys.edx.keys import CourseKey
-from microsite_configuration import microsite
+from .openedx_utils import openedx_microsites
 
 
 class SimpleMicrositeMiddleware(object):
@@ -25,7 +25,7 @@ class SimpleMicrositeMiddleware(object):
         """
         Middleware exit point to delete cache data.
         """
-        microsite.clear()
+        openedx_microsites.microsite.clear()
         return response
 
 
@@ -40,60 +40,13 @@ class MicrositeMiddleware(SimpleMicrositeMiddleware):
         Middleware entry point on every request processing. This will associate a request's domain name
         with a 'University' and any corresponding microsite configuration information
         """
-        microsite.clear()
+        openedx_microsites.microsite.clear()
 
         domain = request.META.get('HTTP_HOST', None)
 
-        microsite.set_by_domain(domain)
+        openedx_microsites.microsite.set_by_domain(domain)
 
         return None
-
-
-class MicrositeSessionCookieDomainMiddleware(object):
-    """
-    Special case middleware which should be at the very end of the MIDDLEWARE list (so that it runs first
-    on the process_response chain). This middleware will define a wrapper function for the set_cookie() function
-    on the HttpResponse object, if the request is running in a middleware.
-
-    This wrapped set_cookie will change the SESSION_COOKIE_DOMAIN setting so that the cookie can be bound to a
-    fully customized URL.
-    """
-
-    def process_response(self, request, response):
-        """
-        Standard Middleware entry point
-        """
-
-        # See if we are running in a Microsite *AND* we have a custom SESSION_COOKIE_DOMAIN defined
-        # in configuration
-        if microsite.has_override_value('SESSION_COOKIE_DOMAIN'):
-
-            # define wrapper function for the standard set_cookie()
-            def _set_cookie_wrapper(key, value='', max_age=None, expires=None, path='/', domain=None, secure=None, httponly=False):
-
-                # only override if we are setting the cookie name to be the one the Django Session Middleware uses
-                # as defined in settings.SESSION_COOKIE_NAME
-                if key == settings.SESSION_COOKIE_NAME:
-                    domain = microsite.get_value('SESSION_COOKIE_DOMAIN', domain)
-
-                # then call down into the normal Django set_cookie method
-                return response.set_cookie_wrapped_func(
-                    key,
-                    value,
-                    max_age=max_age,
-                    expires=expires,
-                    path=path,
-                    domain=domain,
-                    secure=secure,
-                    httponly=httponly
-                )
-
-            # then point the HttpResponse.set_cookie to point to the wrapper and keep
-            # the original around
-            response.set_cookie_wrapped_func = response.set_cookie
-            response.set_cookie = _set_cookie_wrapper
-
-        return response
 
 
 class MicrositeCrossBrandingFilterMiddleware():
@@ -118,14 +71,14 @@ class MicrositeCrossBrandingFilterMiddleware():
         course_key = CourseKey.from_string(course_id)
 
         # If the course org is the same as the current microsite
-        org_filter = microsite.get_value('course_org_filter', set([]))
+        org_filter = openedx_microsites.microsite.get_value('course_org_filter', set([]))
         if isinstance(org_filter, basestring):
             org_filter = set([org_filter])
         if course_key.org in org_filter:
             return None
 
         # If the course does not belong to an ORG defined in a microsite
-        all_orgs = microsite.get_all_orgs()
+        all_orgs = openedx_microsites.microsite.get_all_orgs()
         if course_key.org not in all_orgs:
             return None
 

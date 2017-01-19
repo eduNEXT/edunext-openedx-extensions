@@ -6,32 +6,11 @@ import os.path
 
 from django.conf import settings
 
-from microsite_configuration.backends.base import (
-    BaseMicrositeBackend,
-    BaseMicrositeTemplateBackend,
-)
-from microsite_configuration.microsite import get_value as microsite_get_value
-from microsite_configuration.microsite import is_request_in_microsite
+from .base import BaseMicrositeTemplateBackend
+from ..openedx_utils import openedx_microsites
 
 
-class FilebasedMicrositeBackend(BaseMicrositeBackend):
-    """
-    Microsite backend that reads the microsites definitions
-    from a dictionary called MICROSITE_CONFIGURATION in the settings file.
-    """
-
-    def __init__(self, **kwargs):
-        super(FilebasedMicrositeBackend, self).__init__(**kwargs)
-
-
-class FilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBackend):
-    """
-    Microsite backend that loads templates from filesystem.
-    """
-    pass
-
-
-class EdunextCompatibleFilebasedMicrositeTemplateBackend(FilebasedMicrositeTemplateBackend):
+class EdunextCompatibleFilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBackend):
     """
     Microsite backend that loads templates from filesystem using the configuration
     held before dogwood by edunext
@@ -47,10 +26,13 @@ class EdunextCompatibleFilebasedMicrositeTemplateBackend(FilebasedMicrositeTempl
 
         leading_slash = kwargs.get('leading_slash', False)
 
-        if not is_request_in_microsite():
+        if not openedx_microsites.microsite.is_request_in_microsite():
             return '/' + relative_path if leading_slash else relative_path
 
-        template_dir = str(microsite_get_value('template_dir', microsite_get_value('microsite_name')))
+        template_dir = str(openedx_microsites.microsite.get_value(
+            'template_dir',
+            openedx_microsites.microsite.get_value('microsite_name')
+        ))
 
         if template_dir:
             search_path = os.path.join(
