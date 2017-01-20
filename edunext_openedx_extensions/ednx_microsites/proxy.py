@@ -6,8 +6,6 @@ from django.conf import settings
 
 with:
 
-from microsite_configuration import settings
-or
 from openedx.conf import settings
 
 """
