@@ -2,7 +2,7 @@
 URLs for the Management API
 
 """
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
 from .views import (
     UserManagement,
     OrgManagement,
@@ -11,8 +11,7 @@ from .views import (
 )
 
 
-MANAGE_API_URLS = patterns(
-    'manage_api.views',
+urlpatterns = [
     url(
         r'^v1/users/$',
         UserManagement.as_view(),
@@ -33,8 +32,4 @@ MANAGE_API_URLS = patterns(
         OrganizationView.as_view(),
         name="edx_orgs_api"
     ),
-)
-
-urlpatterns = patterns(
-    url(r'^api/manage/', include(MANAGE_API_URLS))
-)
+]
