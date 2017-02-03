@@ -17,7 +17,7 @@ from student.models import create_comments_service_user
 from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole
 from edxmako.shortcuts import render_to_string
 
-from microsite_api.authenticators import MicrositeManagerAuthentication
+from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from util.json_request import JsonResponse
 from util.organizations_helpers import (
     get_organizations,
