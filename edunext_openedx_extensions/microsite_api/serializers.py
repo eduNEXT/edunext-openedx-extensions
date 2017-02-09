@@ -4,7 +4,7 @@ Serializer to create a representation of the microsite object
 """
 import json
 from rest_framework import serializers
-from microsite_configuration.models import Microsite
+from edunext_openedx_extensions.ednx_microsites.models import Microsite
 
 
 class JSONText(serializers.Field):

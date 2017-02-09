@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
-from microsite_configuration.models import Microsite
+from edunext_openedx_extensions.ednx_microsites.models import Microsite
 from .serializers import MicrositeSerializer, MicrositeMinimalSerializer
 from .authenticators import MicrositeManagerAuthentication
 from util.json_request import JsonResponse

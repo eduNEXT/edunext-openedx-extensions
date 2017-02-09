@@ -12,7 +12,7 @@ try:
     from microsite_configuration.backends.base import BaseMicrositeBackend
 except ImportError:
     from .base import BaseMicrositeBackend
-from microsite_configuration.models import Microsite
+from ..models import Microsite
 
 
 class EdunextCompatibleDatabaseMicrositeBackend(BaseMicrositeBackend):
