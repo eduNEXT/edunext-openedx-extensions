@@ -2,7 +2,16 @@
 Microsite backend that reads the configuration from the database
 """
 from util.url import strip_port_from_host
-from .base import BaseMicrositeBackend
+# First try to import the core microsite_configuration base backend. The reason for this
+# is that get_backed function defined in common/microsite_configuration/microsite.py from
+# edx-platform validates that the configured backend classes MICROSITE_BACKEND and
+# MICROSITE_TEMPLATE_BACKEND are children of microsite_configuration base backend classes,
+# so basically this is avoiding that validation to fail. Eventually we will remove this try
+# except and will import only our base backends to have less and less core dependencies
+try:
+    from microsite_configuration.backends.base import BaseMicrositeBackend
+except ImportError:
+    from .base import BaseMicrositeBackend
 from microsite_configuration.models import Microsite
 
 

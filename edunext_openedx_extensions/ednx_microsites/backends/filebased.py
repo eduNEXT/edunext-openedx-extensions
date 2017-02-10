@@ -6,7 +6,16 @@ import os.path
 
 from django.conf import settings
 
-from .base import BaseMicrositeTemplateBackend
+# First try to import the core microsite_configuration base backend. The reason for this
+# is that get_backed function defined in common/microsite_configuration/microsite.py from
+# edx-platform validates that the configured backend classes MICROSITE_BACKEND and
+# MICROSITE_TEMPLATE_BACKEND are children of microsite_configuration base backend classes,
+# so basically this is avoiding that validation to fail. Eventually we will remove this try
+# except and will import only our base backends to have less and less core dependencies
+try:
+    from microsite_configuration.backends.base import BaseMicrositeTemplateBackend
+except ImportError:
+    from .base import BaseMicrositeTemplateBackend
 from microsite_configuration.microsite import get_value as microsite_get_value
 from microsite_configuration.microsite import is_request_in_microsite
 
