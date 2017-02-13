@@ -25,7 +25,7 @@ from util.organizations_helpers import (
 )
 from openedx.conf import settings
 from microsite_configuration import microsite
-from microsite_configuration.models import Microsite
+from edunext_openedx_extensions.ednx_microsites.models import Microsite
 from .utils import add_organization_from_short_name
 
 log = logging.getLogger("edx.student")

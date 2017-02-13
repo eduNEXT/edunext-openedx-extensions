@@ -11,8 +11,8 @@ from util.url import strip_port_from_host
 try:
     from microsite_configuration.backends.base import BaseMicrositeBackend
 except ImportError:
-    from .base import BaseMicrositeBackend
-from microsite_configuration.models import Microsite
+    from edunext_openedx_extensions.ednx_microsites.backends.base import BaseMicrositeBackend
+from edunext_openedx_extensions.ednx_microsites.models import Microsite
 
 
 class EdunextCompatibleDatabaseMicrositeBackend(BaseMicrositeBackend):
