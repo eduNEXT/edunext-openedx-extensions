@@ -31,13 +31,13 @@ lint: ## check style with flake8
 	flake8 edunext_openedx_extensions tests
 
 test: ## run tests quickly with the default Python
-	python runtests.py tests
+	python runtests.py
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source edunext_openedx_extensions runtests.py tests
+	coverage run --source edunext_openedx_extensions runtests.py
 	coverage report -m
 	coverage html
 	open htmlcov/index.html

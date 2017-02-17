@@ -1,2 +1,2 @@
-
 # Additional requirements go here
+jsonfield==1.0.3

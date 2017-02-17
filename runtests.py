@@ -17,7 +17,10 @@ try:
             "django.contrib.auth",
             "django.contrib.contenttypes",
             "django.contrib.sites",
-            "edunext_openedx_extensions",
+            "edunext_openedx_extensions.ednx_microsites",
+            "edunext_openedx_extensions.edunext",
+            "edunext_openedx_extensions.manage_api",
+            "edunext_openedx_extensions.microsite_api",
         ],
         SITE_ID=1,
         MIDDLEWARE_CLASSES=(),
@@ -41,6 +44,13 @@ except ImportError:
 def run_tests(*test_args):
     if not test_args:
         test_args = ['tests']
+
+    test_args = [
+        'edunext_openedx_extensions.ednx_microsites',
+        'edunext_openedx_extensions.edunext',
+        'edunext_openedx_extensions.manage_api',
+        'edunext_openedx_extensions.microsite_api'
+    ]
 
     # Run tests
     TestRunner = get_runner(settings)

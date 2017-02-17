@@ -1,0 +1,15 @@
+## Customize the test machine
+machine:
+  python:
+    version: 2.7.10
+
+## Customize dependencies
+dependencies:
+  override:
+    - pip install --upgrade setuptools
+    - pip install -r requirements_test.txt
+
+## Customize test commands
+test:
+  override:
+    - tox
