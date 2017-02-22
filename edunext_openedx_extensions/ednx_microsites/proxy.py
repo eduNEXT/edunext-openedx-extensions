@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
 This file implements a class which is a handy utility to make any
 call to the settings completely microsite aware by replacing the:

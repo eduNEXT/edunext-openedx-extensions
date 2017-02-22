@@ -15,7 +15,7 @@ class EnrollmentsGrades(Task):
     TODO: add me
     """
 
-    def run(self, data, *args, **kwargs):
+    def run(self, data, *args, **kwargs):  # pylint: disable=unused-argument,no-self-use
         """
         This task receives a list with enrollments, and returns the same
         enrollments with grades data

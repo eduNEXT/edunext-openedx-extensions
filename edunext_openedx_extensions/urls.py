@@ -1,4 +1,8 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+urls for main app
+"""
 from django.conf.urls import url
 from django.views.generic import TemplateView
 

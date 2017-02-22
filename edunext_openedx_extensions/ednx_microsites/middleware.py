@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
 This file implements the Middleware support for the Open edX platform.
 A microsite enables the following features:
@@ -60,14 +62,14 @@ class MicrositeCrossBrandingFilterMiddleware():
         microsite, but it is not the current microsite
         """
         path = request.path_info
-        p = re.compile('/courses/{}/'.format(settings.COURSE_ID_PATTERN))
-        m = p.match(path)
+        regex_path_match = re.compile('/courses/{}/'.format(settings.COURSE_ID_PATTERN))
+        matched_regex = regex_path_match.match(path)
 
         # If there is no match, then we are not in a ORG-restricted area
-        if m is None:
+        if matched_regex is None:
             return None
 
-        course_id = m.group('course_id')
+        course_id = matched_regex.group('course_id')
         course_key = CourseKey.from_string(course_id)
 
         # If the course org is the same as the current microsite

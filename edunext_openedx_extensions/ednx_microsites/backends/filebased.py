@@ -26,6 +26,9 @@ class EdunextCompatibleFilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBa
     held before dogwood by edunext
     """
     def make_absolute_path(self, relative_path):
+        """
+        TODO: add me
+        """
         return '/' + relative_path
 
     def get_template_path(self, relative_path, **kwargs):

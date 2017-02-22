@@ -14,7 +14,7 @@ from rest_framework import serializers
 from courseware import grades, courses
 from .fields import CustomRelatedField
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -35,7 +35,7 @@ class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
             return _output
         except ValueError:
             if obj:
-                log.warning("Could not parse metadata during data-api call. {meta}.".format(
+                LOG.warning("Could not parse metadata during data-api call. {meta}.".format(
                     meta=obj,
                 ))
             return _fields
@@ -80,11 +80,6 @@ class UserSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     goals = serializers.CharField(source="profile.goals", read_only=True)
     bio = serializers.CharField(source="profile.bio", max_length=3000, read_only=True)
 
-    # TODO: should we add this?
-    # has_profile_image
-    # courseware = models.CharField(blank=True, max_length=255, default='course.xml')  # TODO: what is this?
-    # allow_certificate = models.BooleanField(default=1)  # TODO: what is this?
-
     # ######################################################
     # From common.djangoapps.student.models.UserSignupSource
     # ######################################################
@@ -110,7 +105,7 @@ class CourseEnrollmentWithGradesSerializer(CourseEnrollmentSerializer):  # pylin
     """
     grades = serializers.SerializerMethodField()
 
-    def get_grades(self, obj):
+    def get_grades(self, obj):  # pylint: disable=no-self-use
         """
         TODO: add me
         """
@@ -167,7 +162,7 @@ class ProctoredExamStudentAttemptSerializer(serializers.Serializer):  # pylint: 
 
     time_taken = serializers.SerializerMethodField()
 
-    def get_time_taken(self, obj):
+    def get_time_taken(self, obj):  # pylint: disable=no-self-use
         """
         TODO: add me
         """

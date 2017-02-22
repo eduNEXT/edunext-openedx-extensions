@@ -1,7 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+TODO: add me
+"""
 from util.organizations_helpers import add_organization
 
 
-def add_organization_from_short_name(short_name):
+def add_org_from_short_name(short_name):
+    """
+    TODO: add me
+    """
 
     org_data = {
         "name": short_name,

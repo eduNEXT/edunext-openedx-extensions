@@ -1,12 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+TODO: add me
+"""
 from django.http import HttpResponse, Http404
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
+from util.json_request import JsonResponse
 from .serializers import MicrositeSerializer, MicrositeMinimalSerializer
 from .authenticators import MicrositeManagerAuthentication
-from util.json_request import JsonResponse
 
 
 class MicrositeList(APIView):
@@ -18,11 +23,17 @@ class MicrositeList(APIView):
     renderer_classes = [JSONRenderer]
 
     def get(self, request, format=None):
-        microsite = Microsite.objects.all()
+        """
+        TODO: add me
+        """
+        microsite = Microsite.objects.all()  # pylint: disable=no-member
         serializer = MicrositeMinimalSerializer(microsite, many=True)
         return JsonResponse(serializer.data)
 
     def post(self, request, format=None):
+        """
+        TODO: add me
+        """
         data = JSONParser().parse(request)
         serializer = MicrositeSerializer(data=data)
         if serializer.is_valid():
@@ -40,17 +51,26 @@ class MicrositeDetail(APIView):
     renderer_classes = [JSONRenderer]
 
     def get_microsite(self, key):
+        """
+        TODO: add me
+        """
         try:
-            return Microsite.objects.get(key=key)
-        except Microsite.DoesNotExist:
+            return Microsite.objects.get(key=key)  # pylint: disable=no-member
+        except Microsite.DoesNotExist:  # pylint: disable=no-member
             raise Http404
 
     def get(self, request, key, format=None):
+        """
+        TODO: add me
+        """
         microsite = self.get_microsite(key)
         serializer = MicrositeSerializer(microsite)
         return JsonResponse(serializer.data)
 
     def put(self, request, key, format=None):
+        """
+        TODO: add me
+        """
         microsite = self.get_microsite(key)
         data = JSONParser().parse(request)
 
@@ -66,6 +86,9 @@ class MicrositeDetail(APIView):
         return JsonResponse(serializer.errors, status=400)
 
     def delete(self, request, key, format=None):
+        """
+        TODO: add me
+        """
         microsite = self.get_microsite(key)
         microsite.delete()
         return HttpResponse(status=204)

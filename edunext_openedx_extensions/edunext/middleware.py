@@ -22,7 +22,7 @@ class MicrositeMiddleware(object):
     Middleware for Redirecting microsites to other domains or to error pages
     """
 
-    def process_request(self, request):
+    def process_request(self, request):  # pylint: disable=no-self-use
         """
         This middleware handles redirections and error pages according to the
         business logic at edunext
@@ -38,8 +38,8 @@ class MicrositeMiddleware(object):
 
         if not target:
             try:
-                target = Redirection.objects.get(domain__iexact=domain)
-            except Redirection.DoesNotExist:
+                target = Redirection.objects.get(domain__iexact=domain)  # pylint: disable=no-member
+            except Redirection.DoesNotExist:  # pylint: disable=no-member
                 target = '##none'
 
             cache.set(  # pylint: disable=maybe-no-member

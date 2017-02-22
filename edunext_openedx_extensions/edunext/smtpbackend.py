@@ -18,7 +18,7 @@ class MicrositeAwareEmailBackend(EmailBackend):
     def __init__(self, host=None, port=None, username=None, password=None,
                  use_tls=None, fail_silently=False, use_ssl=None, timeout=None,
                  ssl_keyfile=None, ssl_certfile=None,
-                 **kwargs):
+                 **kwargs):  # pylint: disable=too-many-arguments
 
         super(MicrositeAwareEmailBackend, self).__init__()
         self.username = settings.EMAIL_HOST_USER

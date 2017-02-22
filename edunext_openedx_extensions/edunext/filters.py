@@ -46,6 +46,9 @@ class UserFilter(BaseDataApiFilter):
     site = django_filters.CharFilter(name="usersignupsource__site", lookup_type='iexact')
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = User
         fields = [
             'id',
@@ -77,7 +80,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
     mode = django_filters.CharFilter(lookup_type='icontains')
     site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_type='iexact')
 
-    def filter_course_id(self, queryset, value):
+    def filter_course_id(self, queryset, value):  # pylint: disable=no-self-use
         """
         This custom filter was created to enable filtering by course_id.
 
@@ -102,6 +105,9 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
         return queryset
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = CourseEnrollment
         fields = [
             'id',
@@ -127,7 +133,7 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
     course_id = django_filters.MethodFilter()
     status = django_filters.MethodFilter()
 
-    def filter_course_id(self, queryset, value):
+    def filter_course_id(self, queryset, value):  # pylint: disable=no-self-use
         """
         This custom filter was created to enable filtering by course_id.
 
@@ -166,6 +172,9 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
         return queryset
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = GeneratedCertificate
         fields = [
             'id',
@@ -189,6 +198,9 @@ class ProctoredExamStudentAttemptFilter(BaseDataApiFilter):
     exam_name = django_filters.CharFilter(name="proctored_exam__exam_name", lookup_type='iexact')
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = ProctoredExamStudentAttempt
         fields = [
             'id',

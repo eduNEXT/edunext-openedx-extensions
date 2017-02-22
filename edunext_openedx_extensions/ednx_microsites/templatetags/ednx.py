@@ -4,12 +4,13 @@ based on the current micro site.
 """
 from django import template
 from django.conf import settings
-from microsite_configuration import microsite
 from django.templatetags.static import static
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.translation import get_language_bidi
 
-register = template.Library()
+from microsite_configuration import microsite
+
+register = template.Library()  # pylint: disable=invalid-name
 
 
 @register.simple_tag(name="favicon_path")

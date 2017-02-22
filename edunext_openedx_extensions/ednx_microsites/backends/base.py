@@ -11,12 +11,12 @@ BaseMicrositeTemplateBackend is Base Class for the microsite template backend.
 from __future__ import absolute_import
 
 import abc
-import edxmako
 import os.path
 import threading
 
 from django.conf import settings
 
+import edxmako
 from util.url import strip_port_from_host
 
 
@@ -295,7 +295,9 @@ class BaseMicrositeBackend(AbstractBaseMicrositeBackend):
         microsites_root = settings.MICROSITE_ROOT_DIR
 
         if self.has_configuration_set():
-            settings.MAKO_TEMPLATES['main'].insert(0, microsites_root)  # BC-21: not completely sure this is required, it is related to comp_theming. 68312bdd2dac932b95c5720b3e7e42d0f788c8f0
+            # BC-21: not completely sure this is required, it is related to comp_theming.
+            # 68312bdd2dac932b95c5720b3e7e42d0f788c8f0
+            settings.MAKO_TEMPLATES['main'].insert(0, microsites_root)
             settings.DEFAULT_TEMPLATE_ENGINE['DIRS'].append(microsites_root)
 
 

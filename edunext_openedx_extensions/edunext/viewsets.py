@@ -51,7 +51,7 @@ class DataApiViewSet(mixins.ListModelMixin,
             return self.queryset
         return self.add_prefetch_fields_to_queryset(self.queryset, self.prefetch_fields)
 
-    def add_prefetch_fields_to_queryset(self, queryset, fields=None):
+    def add_prefetch_fields_to_queryset(self, queryset, fields=None):  # pylint: disable=no-self-use
         """
         TODO: add me
         """

@@ -38,7 +38,7 @@ class EdunextCompatibleDatabaseMicrositeBackend(BaseMicrositeBackend):
         if cached_list:
             candidates = cached_list
         else:
-            candidates = Microsite.objects.all()
+            candidates = Microsite.objects.all()  # pylint: disable=no-member
             self.set_key_to_cache(cache_key, candidates)
 
         for microsite in candidates:
@@ -61,10 +61,10 @@ class EdunextCompatibleDatabaseMicrositeBackend(BaseMicrositeBackend):
         # if no match on subdomain then see if there is a 'default' microsite
         # defined in the db. If so, then use it
         try:
-            microsite = Microsite.objects.get(key='default')
+            microsite = Microsite.objects.get(key='default')  # pylint: disable=no-member
             self._set_microsite_config_from_obj(microsite.subdomain, domain, microsite)
             return
-        except Microsite.DoesNotExist:
+        except Microsite.DoesNotExist:  # pylint: disable=no-member
             return
 
     def get_all_config(self):
@@ -73,7 +73,7 @@ class EdunextCompatibleDatabaseMicrositeBackend(BaseMicrositeBackend):
         """
         config = {}
 
-        candidates = Microsite.objects.all()
+        candidates = Microsite.objects.all()  # pylint: disable=no-member
         for microsite in candidates:
             values = microsite.values
             config[microsite.key] = values
@@ -121,7 +121,7 @@ class EdunextCompatibleDatabaseMicrositeBackend(BaseMicrositeBackend):
         for microsite in self.iterate_sites():
             current = microsite.values
             org_filter = current.get('course_org_filter')
-            if org_filter and type(org_filter) is list:
+            if org_filter and isinstance(org_filter, list):
                 for org in org_filter:
                     org_filter_set.add(org)
             elif org_filter:
