@@ -3,7 +3,7 @@
 """
 TODO: add me
 """
-from util.organizations_helpers import add_organization
+from util.organizations_helpers import add_organization  # pylint: disable=import-error
 
 
 def add_org_from_short_name(short_name):

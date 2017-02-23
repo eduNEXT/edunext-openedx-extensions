@@ -14,7 +14,7 @@ from django.conf import settings
 from django.http import Http404
 
 from opaque_keys.edx.keys import CourseKey
-from microsite_configuration import microsite
+from microsite_configuration import microsite  # pylint: disable=import-error
 
 
 class SimpleMicrositeMiddleware(object):

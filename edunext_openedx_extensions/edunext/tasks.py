@@ -5,7 +5,7 @@ TODO: add me
 """
 from celery import Task
 
-from student.models import CourseEnrollment
+from student.models import CourseEnrollment  # pylint: disable=import-error
 
 from .serializers import CourseEnrollmentWithGradesSerializer
 
@@ -15,7 +15,7 @@ class EnrollmentsGrades(Task):
     TODO: add me
     """
 
-    def run(self, data, *args, **kwargs):  # pylint: disable=unused-argument,no-self-use
+    def run(self, data, *args, **kwargs):  # pylint: disable=unused-argument
         """
         This task receives a list with enrollments, and returns the same
         enrollments with grades data

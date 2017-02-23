@@ -16,8 +16,8 @@ import threading
 
 from django.conf import settings
 
-import edxmako
-from util.url import strip_port_from_host
+import edxmako  # pylint: disable=import-error
+from util.url import strip_port_from_host  # pylint: disable=import-error
 
 
 # pylint: disable=unused-argument
@@ -314,7 +314,7 @@ class BaseMicrositeTemplateBackend(object):
         an override or will just return what is passed in which is expected to be a string
         """
 
-        from microsite_configuration.microsite import get_value as microsite_get_value
+        from microsite_configuration.microsite import get_value as microsite_get_value  # pylint: disable=import-error
 
         microsite_template_path = microsite_get_value('template_dir', None)
         if not microsite_template_path:

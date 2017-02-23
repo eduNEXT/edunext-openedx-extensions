@@ -8,7 +8,7 @@ from django.templatetags.static import static
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.translation import get_language_bidi
 
-from microsite_configuration import microsite
+from microsite_configuration import microsite  # pylint: disable=import-error
 
 register = template.Library()  # pylint: disable=invalid-name
 

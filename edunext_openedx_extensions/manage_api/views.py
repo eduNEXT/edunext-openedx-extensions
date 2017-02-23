@@ -13,22 +13,22 @@ from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.exceptions import ParseError
 
-from openedx.conf import settings
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
-from student.views import _do_create_account
-from student.forms import AccountCreationForm
-from student.models import create_comments_service_user
-from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole
-from edxmako.shortcuts import render_to_string
+from openedx.conf import settings  # pylint: disable=import-error
+from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
+from student.views import _do_create_account  # pylint: disable=import-error
+from student.forms import AccountCreationForm  # pylint: disable=import-error
+from student.models import create_comments_service_user  # pylint: disable=import-error
+from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole  # pylint: disable=import-error
+from edxmako.shortcuts import render_to_string  # pylint: disable=import-error
 
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
-from util.json_request import JsonResponse
-from util.organizations_helpers import (
+from util.json_request import JsonResponse  # pylint: disable=import-error
+from util.organizations_helpers import (  # pylint: disable=import-error
     get_organizations,
     add_organization,
 )
-from microsite_configuration import microsite
+from microsite_configuration import microsite  # pylint: disable=import-error
 from .utils import add_org_from_short_name
 
 LOG = logging.getLogger("edx.student")
@@ -42,7 +42,7 @@ class UserManagement(APIView):
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
-    def post(self, request, format=None):  # pylint: disable=no-self-use
+    def post(self, request):
         """
         TODO: add me
         """
@@ -135,7 +135,7 @@ class OrgManagement(APIView):
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
-    def post(self, request, format=None):  # pylint: disable=no-self-use
+    def post(self, request):
         """
         TODO: add me
         """
@@ -161,7 +161,7 @@ class SubdomainManagement(APIView):
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
-    def post(self, request, format=None):  # pylint: disable=no-self-use
+    def post(self, request):
         """
         TODO: add me
         """

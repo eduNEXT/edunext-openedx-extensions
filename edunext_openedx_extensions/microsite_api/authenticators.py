@@ -123,5 +123,5 @@ class MicrositeManagerAuthentication(authentication.BaseAuthentication):
         """
         # TODO: must check how easy would be to spoof this
         if not validate_host(request.META.get('REMOTE_ADDR'), settings.MICROSITE_API_ALLOWED_REMOTES):
-            LOG.warning(u"API caller's host not allowed {}".format(request.META.get('REMOTE_ADDR')))
+            LOG.warning(u"API caller's host not allowed %s", request.META.get('REMOTE_ADDR'))
             raise exceptions.AuthenticationFailed('Host not allowed')

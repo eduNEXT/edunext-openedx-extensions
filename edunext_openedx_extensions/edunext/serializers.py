@@ -11,7 +11,7 @@ import logging
 from django.utils.duration import duration_string
 from rest_framework import serializers
 
-from courseware import grades, courses
+from courseware import grades, courses  # pylint: disable=import-error
 from .fields import CustomRelatedField
 
 LOG = logging.getLogger(__name__)
@@ -35,9 +35,7 @@ class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
             return _output
         except ValueError:
             if obj:
-                LOG.warning("Could not parse metadata during data-api call. {meta}.".format(
-                    meta=obj,
-                ))
+                LOG.warning("Could not parse metadata during data-api call. %s.", obj)
             return _fields
 
 
@@ -105,7 +103,7 @@ class CourseEnrollmentWithGradesSerializer(CourseEnrollmentSerializer):  # pylin
     """
     grades = serializers.SerializerMethodField()
 
-    def get_grades(self, obj):  # pylint: disable=no-self-use
+    def get_grades(self, obj):
         """
         TODO: add me
         """
@@ -162,7 +160,7 @@ class ProctoredExamStudentAttemptSerializer(serializers.Serializer):  # pylint: 
 
     time_taken = serializers.SerializerMethodField()
 
-    def get_time_taken(self, obj):  # pylint: disable=no-self-use
+    def get_time_taken(self, obj):
         """
         TODO: add me
         """

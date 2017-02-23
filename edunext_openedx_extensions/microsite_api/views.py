@@ -9,7 +9,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
-from util.json_request import JsonResponse
+from util.json_request import JsonResponse  # pylint: disable=import-error
 from .serializers import MicrositeSerializer, MicrositeMinimalSerializer
 from .authenticators import MicrositeManagerAuthentication
 
@@ -22,7 +22,7 @@ class MicrositeList(APIView):
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
-    def get(self, request, format=None):
+    def get(self, request):  # pylint: disable=unused-argument
         """
         TODO: add me
         """
@@ -30,7 +30,7 @@ class MicrositeList(APIView):
         serializer = MicrositeMinimalSerializer(microsite, many=True)
         return JsonResponse(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request):
         """
         TODO: add me
         """
@@ -59,7 +59,7 @@ class MicrositeDetail(APIView):
         except Microsite.DoesNotExist:  # pylint: disable=no-member
             raise Http404
 
-    def get(self, request, key, format=None):
+    def get(self, request, key):  # pylint: disable=unused-argument
         """
         TODO: add me
         """
@@ -67,7 +67,7 @@ class MicrositeDetail(APIView):
         serializer = MicrositeSerializer(microsite)
         return JsonResponse(serializer.data)
 
-    def put(self, request, key, format=None):
+    def put(self, request, key):
         """
         TODO: add me
         """
@@ -85,7 +85,7 @@ class MicrositeDetail(APIView):
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
 
-    def delete(self, request, key, format=None):
+    def delete(self, request, key):  # pylint: disable=unused-argument
         """
         TODO: add me
         """

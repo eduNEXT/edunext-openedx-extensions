@@ -6,15 +6,15 @@ Controllers for the data-api. Used in the report generation process
 import random
 from datetime import datetime
 
-from rest_framework import viewsets, mixins, filters, status
-from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from rest_framework import viewsets, mixins, filters, status
+from rest_framework.response import Response
 
-from student.models import CourseEnrollment
-from certificates.models import GeneratedCertificate
-from edx_proctoring.models import ProctoredExamStudentAttempt
+from student.models import CourseEnrollment  # pylint: disable=import-error
+from certificates.models import GeneratedCertificate  # pylint: disable=import-error
+from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from edunext_openedx_extensions.microsite_api.authenticators import (
     MicrositeManagerAuthentication,
 )
@@ -51,7 +51,7 @@ class DataApiViewSet(mixins.ListModelMixin,
             return self.queryset
         return self.add_prefetch_fields_to_queryset(self.queryset, self.prefetch_fields)
 
-    def add_prefetch_fields_to_queryset(self, queryset, fields=None):  # pylint: disable=no-self-use
+    def add_prefetch_fields_to_queryset(self, queryset, fields=None):
         """
         TODO: add me
         """

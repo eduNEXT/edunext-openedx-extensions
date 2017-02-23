@@ -1,7 +1,7 @@
 """
 Microsite backend that reads the configuration from the database
 """
-from util.url import strip_port_from_host
+from util.url import strip_port_from_host  # pylint: disable=import-error
 # First try to import the core microsite_configuration base backend. The reason for this
 # is that get_backed function defined in common/microsite_configuration/microsite.py from
 # edx-platform validates that the configured backend classes MICROSITE_BACKEND and

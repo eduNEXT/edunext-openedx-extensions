@@ -13,7 +13,7 @@ from openedx.conf import settings
 """
 from django.conf import settings as base_settings
 
-from microsite_configuration import microsite
+from microsite_configuration import microsite  # pylint: disable=import-error
 
 
 class MicrositeAwareSettings(object):

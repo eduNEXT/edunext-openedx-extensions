@@ -8,9 +8,9 @@ import django_filters
 from rest_framework import filters
 from django.contrib.auth.models import User
 
-from student.models import CourseEnrollment
-from certificates.models import GeneratedCertificate
-from edx_proctoring.models import ProctoredExamStudentAttempt
+from student.models import CourseEnrollment  # pylint: disable=import-error
+from certificates.models import GeneratedCertificate  # pylint: disable=import-error
+from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from opaque_keys.edx.keys import CourseKey
 
 
@@ -80,7 +80,7 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
     mode = django_filters.CharFilter(lookup_type='icontains')
     site = django_filters.CharFilter(name="user__usersignupsource__site", lookup_type='iexact')
 
-    def filter_course_id(self, queryset, value):  # pylint: disable=no-self-use
+    def filter_course_id(self, queryset, value):
         """
         This custom filter was created to enable filtering by course_id.
 
@@ -133,7 +133,7 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
     course_id = django_filters.MethodFilter()
     status = django_filters.MethodFilter()
 
-    def filter_course_id(self, queryset, value):  # pylint: disable=no-self-use
+    def filter_course_id(self, queryset, value):
         """
         This custom filter was created to enable filtering by course_id.
 
