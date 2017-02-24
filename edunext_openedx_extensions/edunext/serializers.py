@@ -11,7 +11,8 @@ import logging
 from django.utils.duration import duration_string
 from rest_framework import serializers
 
-from courseware import grades, courses  # pylint: disable=import-error
+from courseware import courses  # pylint: disable=import-error
+from lms.djangoapps.grades.new.course_grade import CourseGradeFactory  # pylint: disable=import-error
 from .fields import CustomRelatedField
 
 LOG = logging.getLogger(__name__)
@@ -109,7 +110,7 @@ class CourseEnrollmentWithGradesSerializer(CourseEnrollmentSerializer):  # pylin
         """
         course = courses.get_course_by_id(obj.course_id)
         user = obj.user
-        gradeset = grades.grade(user, course, False)
+        gradeset = CourseGradeFactory().create(user, course)
         return gradeset
 
 
