@@ -39,7 +39,7 @@ class Microsite(models.Model):
         """
         # has to return the same type as:
         # MicrositeOrganizationMapping.get_organizations_for_microsite_by_pk(self.id)
-        org_filter = self.values.get('course_org_filter')
+        org_filter = self.values.get('course_org_filter')  # pylint: disable=no-member
 
         if isinstance(org_filter, basestring):
             org_filter = [org_filter]
@@ -55,6 +55,6 @@ class Microsite(models.Model):
 
         # remove any port number from the hostname
         domain = domain.split(':')[0]
-        microsites = cls.objects.filter(subdomain=domain)
+        microsites = cls.objects.filter(subdomain=domain)  # pylint: disable=no-member
 
         return microsites[0] if microsites else None

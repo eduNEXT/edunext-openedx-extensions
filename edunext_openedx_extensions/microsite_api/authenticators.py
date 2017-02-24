@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+TODO: add me
+"""
 import json
 import time
 import traceback
@@ -13,10 +18,13 @@ from rest_framework import authentication
 from rest_framework import exceptions
 from rest_framework.authentication import get_authorization_header
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def decode_token(data):
+    """
+    TODO: add me
+    """
     missing_padding = 4 - len(data) % 4
     if missing_padding:
         data += b'=' * missing_padding
@@ -51,6 +59,9 @@ class MicrositeManagerAuthentication(authentication.BaseAuthentication):
     """
 
     def authenticate(self, request):
+        """
+        TODO: add me
+        """
         try:
             # First validate the host
             self.validate_host(request)
@@ -68,8 +79,8 @@ class MicrositeManagerAuthentication(authentication.BaseAuthentication):
                 raise exceptions.AuthenticationFailed(msg)
 
             return self.authenticate_credentials(auth[1])
-        except exceptions.AuthenticationFailed, e:
-            raise e
+        except exceptions.AuthenticationFailed, error:
+            raise error
         except Exception:
             print traceback.format_exc()
             raise exceptions.AuthenticationFailed('Unknown Error. Check your logs.')
@@ -97,9 +108,12 @@ class MicrositeManagerAuthentication(authentication.BaseAuthentication):
         return self.get_management_user()
 
     def get_management_user(self):
+        """
+        TODO: add me
+        """
         try:
             user = User.objects.get(username=settings.MICROSITE_API_MANAGER)
-        except User.DoesNotExist:
+        except User.DoesNotExist:  # pylint: disable=no-member
             raise exceptions.AuthenticationFailed('No such user')
         return (user, None)
 
@@ -109,5 +123,5 @@ class MicrositeManagerAuthentication(authentication.BaseAuthentication):
         """
         # TODO: must check how easy would be to spoof this
         if not validate_host(request.META.get('REMOTE_ADDR'), settings.MICROSITE_API_ALLOWED_REMOTES):
-            log.warning(u"API caller's host not allowed {}".format(request.META.get('REMOTE_ADDR')))
+            LOG.warning(u"API caller's host not allowed %s", request.META.get('REMOTE_ADDR'))
             raise exceptions.AuthenticationFailed('Host not allowed')

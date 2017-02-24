@@ -16,8 +16,8 @@ try:
     from microsite_configuration.backends.base import BaseMicrositeTemplateBackend
 except ImportError:
     from .base import BaseMicrositeTemplateBackend
-from microsite_configuration.microsite import get_value as microsite_get_value
-from microsite_configuration.microsite import is_request_in_microsite
+from microsite_configuration.microsite import get_value as microsite_get_value  # pylint: disable=import-error
+from microsite_configuration.microsite import is_request_in_microsite  # pylint: disable=import-error
 
 
 class EdunextCompatibleFilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBackend):
@@ -26,6 +26,9 @@ class EdunextCompatibleFilebasedMicrositeTemplateBackend(BaseMicrositeTemplateBa
     held before dogwood by edunext
     """
     def make_absolute_path(self, relative_path):
+        """
+        TODO: add me
+        """
         return '/' + relative_path
 
     def get_template_path(self, relative_path, **kwargs):

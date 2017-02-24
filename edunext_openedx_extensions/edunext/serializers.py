@@ -11,10 +11,10 @@ import logging
 from django.utils.duration import duration_string
 from rest_framework import serializers
 
-from courseware import grades, courses
+from courseware import grades, courses  # pylint: disable=import-error
 from .fields import CustomRelatedField
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -35,9 +35,7 @@ class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
             return _output
         except ValueError:
             if obj:
-                log.warning("Could not parse metadata during data-api call. {meta}.".format(
-                    meta=obj,
-                ))
+                LOG.warning("Could not parse metadata during data-api call. %s.", obj)
             return _fields
 
 
@@ -79,11 +77,6 @@ class UserSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     country = serializers.CharField(source="profile.country", read_only=True)
     goals = serializers.CharField(source="profile.goals", read_only=True)
     bio = serializers.CharField(source="profile.bio", max_length=3000, read_only=True)
-
-    # TODO: should we add this?
-    # has_profile_image
-    # courseware = models.CharField(blank=True, max_length=255, default='course.xml')  # TODO: what is this?
-    # allow_certificate = models.BooleanField(default=1)  # TODO: what is this?
 
     # ######################################################
     # From common.djangoapps.student.models.UserSignupSource

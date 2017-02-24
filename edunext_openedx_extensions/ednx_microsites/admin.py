@@ -7,6 +7,9 @@ from .models import Microsite
 
 
 class MicrositeAdmin(admin.ModelAdmin):
+    """
+    TODO: add me
+    """
     list_display = [
         'key',
         'subdomain',
@@ -22,22 +25,34 @@ class MicrositeAdmin(admin.ModelAdmin):
     search_fields = ('key', 'subdomain', 'values', )
 
     def sitename(self, microsite):
+        """
+        TODO: add me
+        """
+        # pylint: disable=broad-except
         try:
             return microsite.values.get('SITE_NAME', "NOT CONFIGURED")
-        except Exception, e:
-            return unicode(e)
+        except Exception, error:
+            return unicode(error)
 
     def template_dir(self, microsite):
+        """
+        TODO: add me
+        """
+        # pylint: disable=broad-except
         try:
             return microsite.values.get('template_dir', "NOT CONFIGURED")
-        except Exception, e:
-            return unicode(e)
+        except Exception, error:
+            return unicode(error)
 
     def course_org_filter(self, microsite):
+        """
+        TODO: add me
+        """
+        # pylint: disable=broad-except
         try:
             return microsite.values.get('course_org_filter', "NOT CONFIGURED")
-        except Exception, e:
-            return unicode(e)
+        except Exception, error:
+            return unicode(error)
 
 
 admin.site.register(Microsite, MicrositeAdmin)

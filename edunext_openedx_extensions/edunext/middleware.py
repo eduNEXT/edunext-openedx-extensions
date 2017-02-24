@@ -8,10 +8,10 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
-import edxmako
-from util.cache import cache
-from util.memcache import fasthash
-from microsite_configuration import microsite
+import edxmako  # pylint: disable=import-error
+from util.cache import cache  # pylint: disable=import-error
+from util.memcache import fasthash  # pylint: disable=import-error
+from microsite_configuration import microsite  # pylint: disable=import-error
 from .models import Redirection
 
 HOST_VALIDATION_RE = re.compile(r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{2,5})?$")
@@ -38,8 +38,8 @@ class MicrositeMiddleware(object):
 
         if not target:
             try:
-                target = Redirection.objects.get(domain__iexact=domain)
-            except Redirection.DoesNotExist:
+                target = Redirection.objects.get(domain__iexact=domain)  # pylint: disable=no-member
+            except Redirection.DoesNotExist:  # pylint: disable=no-member
                 target = '##none'
 
             cache.set(  # pylint: disable=maybe-no-member

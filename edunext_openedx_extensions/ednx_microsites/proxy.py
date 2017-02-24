@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
 This file implements a class which is a handy utility to make any
 call to the settings completely microsite aware by replacing the:
@@ -11,7 +13,7 @@ from openedx.conf import settings
 """
 from django.conf import settings as base_settings
 
-from microsite_configuration import microsite
+from microsite_configuration import microsite  # pylint: disable=import-error
 
 
 class MicrositeAwareSettings(object):

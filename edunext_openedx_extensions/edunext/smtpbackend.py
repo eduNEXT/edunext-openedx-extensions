@@ -7,8 +7,8 @@ Contains the class for microsite email backend.
 """
 
 from django.core.mail.backends.smtp import EmailBackend
-from openedx.conf import settings
-from microsite_configuration import microsite
+from openedx.conf import settings  # pylint: disable=import-error
+from microsite_configuration import microsite  # pylint: disable=import-error
 
 
 class MicrositeAwareEmailBackend(EmailBackend):
@@ -18,7 +18,7 @@ class MicrositeAwareEmailBackend(EmailBackend):
     def __init__(self, host=None, port=None, username=None, password=None,
                  use_tls=None, fail_silently=False, use_ssl=None, timeout=None,
                  ssl_keyfile=None, ssl_certfile=None,
-                 **kwargs):
+                 **kwargs):  # pylint: disable=too-many-arguments
 
         super(MicrositeAwareEmailBackend, self).__init__()
         self.username = settings.EMAIL_HOST_USER

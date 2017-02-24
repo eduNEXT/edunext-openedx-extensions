@@ -8,9 +8,9 @@ import django_filters
 from rest_framework import filters
 from django.contrib.auth.models import User
 
-from student.models import CourseEnrollment
-from certificates.models import GeneratedCertificate
-from edx_proctoring.models import ProctoredExamStudentAttempt
+from student.models import CourseEnrollment  # pylint: disable=import-error
+from certificates.models import GeneratedCertificate  # pylint: disable=import-error
+from edx_proctoring.models import ProctoredExamStudentAttempt  # pylint: disable=import-error
 from opaque_keys.edx.keys import CourseKey
 
 
@@ -46,6 +46,9 @@ class UserFilter(BaseDataApiFilter):
     site = django_filters.CharFilter(name="usersignupsource__site", lookup_type='iexact')
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = User
         fields = [
             'id',
@@ -102,6 +105,9 @@ class CourseEnrollmentFilter(BaseDataApiFilter):
         return queryset
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = CourseEnrollment
         fields = [
             'id',
@@ -166,6 +172,9 @@ class GeneratedCerticatesFilter(BaseDataApiFilter):
         return queryset
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = GeneratedCertificate
         fields = [
             'id',
@@ -189,6 +198,9 @@ class ProctoredExamStudentAttemptFilter(BaseDataApiFilter):
     exam_name = django_filters.CharFilter(name="proctored_exam__exam_name", lookup_type='iexact')
 
     class Meta(object):
+        """
+        TODO: add me
+        """
         model = ProctoredExamStudentAttempt
         fields = [
             'id',

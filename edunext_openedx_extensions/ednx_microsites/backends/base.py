@@ -11,13 +11,13 @@ BaseMicrositeTemplateBackend is Base Class for the microsite template backend.
 from __future__ import absolute_import
 
 import abc
-import edxmako
 import os.path
 import threading
 
 from django.conf import settings
 
-from util.url import strip_port_from_host
+import edxmako  # pylint: disable=import-error
+from util.url import strip_port_from_host  # pylint: disable=import-error
 
 
 # pylint: disable=unused-argument
@@ -295,7 +295,9 @@ class BaseMicrositeBackend(AbstractBaseMicrositeBackend):
         microsites_root = settings.MICROSITE_ROOT_DIR
 
         if self.has_configuration_set():
-            settings.MAKO_TEMPLATES['main'].insert(0, microsites_root)  # BC-21: not completely sure this is required, it is related to comp_theming. 68312bdd2dac932b95c5720b3e7e42d0f788c8f0
+            # BC-21: not completely sure this is required, it is related to comp_theming.
+            # 68312bdd2dac932b95c5720b3e7e42d0f788c8f0
+            settings.MAKO_TEMPLATES['main'].insert(0, microsites_root)
             settings.DEFAULT_TEMPLATE_ENGINE['DIRS'].append(microsites_root)
 
 
@@ -312,7 +314,7 @@ class BaseMicrositeTemplateBackend(object):
         an override or will just return what is passed in which is expected to be a string
         """
 
-        from microsite_configuration.microsite import get_value as microsite_get_value
+        from microsite_configuration.microsite import get_value as microsite_get_value  # pylint: disable=import-error
 
         microsite_template_path = microsite_get_value('template_dir', None)
         if not microsite_template_path:
