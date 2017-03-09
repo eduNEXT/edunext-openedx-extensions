@@ -7,7 +7,7 @@ from config_models.models import ConfigurationModel  # pylint: disable=import-er
 from microsite_configuration import microsite  # pylint: disable=import-error
 
 
-class DarkLangConfig(ConfigurationModel):
+class EdnxDarkLangConfig(ConfigurationModel):
     """
     Configuration for the dark_lang django app.
     """
@@ -17,7 +17,7 @@ class DarkLangConfig(ConfigurationModel):
     )
 
     def __unicode__(self):
-        return u"DarkLangConfig()"
+        return u"EdnxDarkLangConfig()"
 
     @property
     def released_languages_list(self):

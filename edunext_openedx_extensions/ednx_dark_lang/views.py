@@ -8,8 +8,8 @@ from django.utils.translation import ugettext as _
 from django.views.generic.base import View
 
 from edxmako.shortcuts import render_to_response  # pylint: disable=import-error
-from edunext_openedx_extensions.dark_lang import DARK_LANGUAGE_KEY
-from edunext_openedx_extensions.dark_lang.models import DarkLangConfig
+from edunext_openedx_extensions.ednx_dark_lang import DARK_LANGUAGE_KEY
+from edunext_openedx_extensions.ednx_dark_lang.models import EdnxDarkLangConfig
 from edunext_openedx_extensions.ednx_lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.user_api.preferences.api import (  # pylint: disable=import-error
     delete_user_preference, get_user_preference, set_user_preference
@@ -77,7 +77,7 @@ class DarkLangView(View):
             'uses_pattern_library': True
         }
         response = None
-        if not DarkLangConfig.current().enabled:  # pylint: disable=no-member
+        if not EdnxDarkLangConfig.current().enabled:  # pylint: disable=no-member
             message = _('Preview Language is currently disabled')
             context.update({'form_submit_message': message})
             context.update({'success': False})

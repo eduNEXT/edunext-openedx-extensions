@@ -6,27 +6,29 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 
 
-def create_dark_lang_config(apps, schema_editor):
+def create_ednx_dark_lang_config(apps, schema_editor):
     """
     Enable DarkLang by default when it is installed, to prevent accidental
     release of testing languages.
     """
-    DarkLangConfig = apps.get_model("dark_lang", "DarkLangConfig")
+    EdnxDarkLangConfig = apps.get_model("ednx_dark_lang", "EdnxDarkLangConfig")
 
-    objects = DarkLangConfig.objects
+    objects = EdnxDarkLangConfig.objects
     if not objects.exists():
         objects.create(enabled=True)
 
-def remove_dark_lang_config(apps, schema_editor):
+
+def remove_ednx_dark_lang_config(apps, schema_editor):
     """Write your backwards methods here."""
     raise RuntimeError("Cannot reverse this migration.")
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dark_lang', '0001_initial'),
+        ('ednx_dark_lang', '0001_initial'),
     ]
 
     operations = [
-        migrations.RunPython(create_dark_lang_config, remove_dark_lang_config),
+        migrations.RunPython(create_ednx_dark_lang_config, remove_ednx_dark_lang_config),
     ]
