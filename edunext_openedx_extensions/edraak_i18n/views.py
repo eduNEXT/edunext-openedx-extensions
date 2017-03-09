@@ -8,7 +8,7 @@ from django.utils.translation.trans_real import LANGUAGE_SESSION_KEY
 from django.core.exceptions import PermissionDenied
 
 from openedx.core.djangoapps.user_api.preferences.api import set_user_preference  # pylint: disable=import-error
-from edunext_openedx_extensions.dark_lang import DARK_LANGUAGE_KEY
+from edunext_openedx_extensions.ednx_dark_lang import DARK_LANGUAGE_KEY
 from edunext_openedx_extensions.microsite_aware_functions.language import ma_language
 
 

@@ -6,7 +6,7 @@ from collections import namedtuple
 from django.utils.translation import ugettext as _
 
 from openedx.conf import settings  # pylint: disable=import-error
-from edunext_openedx_extensions.dark_lang.models import DarkLangConfig
+from edunext_openedx_extensions.ednx_dark_lang.models import EdnxDarkLangConfig
 
 
 # Named tuples can be referenced using object-like variable
@@ -31,7 +31,7 @@ def released_languages():
         [Language(code='en', name=u'English'), Language(code='fr', name=u'Français')]
 
     """
-    released_language_codes = DarkLangConfig.current().released_languages_list  # pylint: disable=no-member
+    released_language_codes = EdnxDarkLangConfig.current().released_languages_list  # pylint: disable=no-member
     default_language_code = settings.LANGUAGE_CODE
 
     if default_language_code not in released_language_codes:

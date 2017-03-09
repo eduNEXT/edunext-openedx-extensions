@@ -16,8 +16,8 @@ from openedx.core.djangoapps.user_api.preferences.api import (  # pylint: disabl
 from openedx.conf import settings  # pylint: disable=import-error
 from microsite_configuration import microsite  # pylint: disable=import-error
 from edunext_openedx_extensions.microsite_aware_functions.language import ma_language
-from edunext_openedx_extensions.dark_lang import DARK_LANGUAGE_KEY
-from edunext_openedx_extensions.dark_lang.models import DarkLangConfig
+from edunext_openedx_extensions.ednx_dark_lang import DARK_LANGUAGE_KEY
+from edunext_openedx_extensions.ednx_dark_lang.models import EdnxDarkLangConfig
 
 PREVIEW_LANG_COOKIE = 'preview-lang'
 
@@ -63,7 +63,7 @@ class DarkLangMiddleware(object):
     """
     Middleware for dark-launching languages.
 
-    This is configured by creating ``DarkLangConfig`` rows in the database,
+    This is configured by creating ``EdnxDarkLangConfig`` rows in the database,
     using the django admin site.
     """
     @property
@@ -71,7 +71,7 @@ class DarkLangMiddleware(object):
         """
         Current list of released languages
         """
-        language_options = DarkLangConfig.current().released_languages_list  # pylint: disable=no-member
+        language_options = EdnxDarkLangConfig.current().released_languages_list  # pylint: disable=no-member
         if not language_options:
             language_options.append(settings.LANGUAGE_CODE)
         return language_options
@@ -80,7 +80,7 @@ class DarkLangMiddleware(object):
         """
         Prevent user from requesting un-released languages except by using the preview-lang query string.
         """
-        if (not DarkLangConfig.current().enabled and  # pylint: disable=no-member
+        if (not EdnxDarkLangConfig.current().enabled and  # pylint: disable=no-member
                 not microsite.get_value('released_languages')):
             return
 
