@@ -110,7 +110,7 @@ class CourseEnrollmentWithGradesSerializer(CourseEnrollmentSerializer):  # pylin
         """
         course = courses.get_course_by_id(obj.course_id)
         user = obj.user
-        gradeset = CourseGradeFactory().create(user, course)
+        gradeset = CourseGradeFactory().create(user, course).summary
         return gradeset
 
 
