@@ -102,7 +102,15 @@ class AbstractBaseMicrositeBackend(object):
         raise NotImplementedError()
 
 
-class BaseMicrositeBackend(AbstractBaseMicrositeBackend):
+# This is the connection point between openedx and this module
+# We need to pass the class inheritance validation, and also stand alone for tests
+try:
+    from microsite_configuration.backends.base import BaseMicrositeBackend as InterfaceConnectionBackend
+except ImportError:
+    InterfaceConnectionBackend = AbstractBaseMicrositeBackend
+
+
+class BaseMicrositeBackend(InterfaceConnectionBackend):
     """
     Base class for Microsite backends.
     """
