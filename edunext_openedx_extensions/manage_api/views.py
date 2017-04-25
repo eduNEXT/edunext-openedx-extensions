@@ -91,7 +91,7 @@ class UserManagement(APIView):
                 message_html = None
                 if settings.FEATURES.get('ENABLE_MULTIPART_EMAIL'):
                     try:
-                        message_html = render_to_string('emails/html/activation_email.html', context)
+                        message_html = render_to_string('emails/activation_email.html', context)
                     except Exception:  # pylint: disable=broad-except
                         message_html = None
                 from_address = microsite.get_value(
