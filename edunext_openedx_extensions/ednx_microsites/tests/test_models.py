@@ -4,21 +4,31 @@
 TODO: add me
 """
 from django.test import TestCase
+from django.core.exceptions import ValidationError
+
+from edunext_openedx_extensions.ednx_microsites.models import Microsite
 
 
 class MicrositeModelTest(TestCase):
     """
-    TODO: add me
+    Test the model where most of the logic is
     """
 
-    def test_model(self):
+    def test_model_creation(self):
         """
-        TODO: add me
+        Answers the question: Can we create a model?
         """
-        pass
+        obj = Microsite()
+        obj.key = "test_fake_key"
+        obj.subdomain = "subdomain.localhost"
+        obj.values = r"{}"
+        obj.full_clean()
 
-    def test_model_2(self):
+    def test_model_creation_fail(self):
         """
-        TODO: add me
+        Answers the question: If we make a wrong object, does it complain?
         """
-        pass
+        obj = Microsite()
+        obj.key = "test_fake_key"
+        with self.assertRaises(ValidationError):
+            obj.full_clean()
