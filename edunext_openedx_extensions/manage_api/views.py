@@ -8,10 +8,13 @@ from itertools import chain
 
 from django.db import transaction
 from django.core import mail
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 from django.utils.translation import override as override_language
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.exceptions import ParseError
+from rest_framework import status as drf_status
 
 from openedx.conf import settings  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
@@ -125,6 +128,51 @@ class UserManagement(APIView):
             registration.activate()
 
         return JsonResponse({"success": True}, status=201)
+
+    def get(self, request, **kwargs):  # pylint: disable=unused-argument
+        """
+        TODO: add me
+        """
+
+        username = request.GET.get('username')
+        email = request.GET.get('email')
+
+        result, status = self._get_user(username, email)
+
+        return JsonResponse(result, status=status)
+
+    def _get_user(self, username, email):
+        """
+        Helper method to return the username and email of an existing user.
+        """
+        try:
+            existing_user = User.objects.get(username=username)
+            result = {
+                'username': existing_user.username,
+                'email': existing_user.email,
+            }
+            status = drf_status.HTTP_200_OK
+        except ObjectDoesNotExist:
+            result, status = self._get_user_by_email(email)
+
+        return result, status
+
+    def _get_user_by_email(self, email):
+        """
+        Helper method to get user info using the email as input.
+        """
+        try:
+            existing_user = User.objects.get(email=email)
+            result = {
+                'username': existing_user.username,
+                'email': existing_user.email,
+            }
+            status = drf_status.HTTP_200_OK
+        except ObjectDoesNotExist:
+            result = {'result': 'user not found'}
+            status = drf_status.HTTP_400_BAD_REQUEST
+
+        return result, status
 
 
 class OrgManagement(APIView):
