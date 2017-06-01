@@ -25,7 +25,7 @@ class JSONText(serializers.Field):
         try:
             return json.loads(data)
         except ValueError:
-            raise serializers.ValidationError
+            raise serializers.ValidationError("Error loading JSON object")
 
 
 class MicrositeSerializer(serializers.ModelSerializer):
