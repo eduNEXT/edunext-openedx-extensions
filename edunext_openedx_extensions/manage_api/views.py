@@ -131,19 +131,28 @@ class UserManagement(APIView):
 
     def get(self, request, **kwargs):  # pylint: disable=unused-argument
         """
-        TODO: add me
+        Returns a registered edx-platform user searching by username or email
         """
-
         username = request.GET.get('username')
         email = request.GET.get('email')
 
-        result, status = self._get_user(username, email)
+        # this validation is required if the API call do not comes from enrollapi
+        if not username and not email:
+            result = {'result': 'username and email not given'}
+            status = drf_status.HTTP_400_BAD_REQUEST
+
+        if username:
+            result, status = self._get_user_by_username(username)
+
+        if not username and email:
+            result, status = self._get_user_by_email(email)
 
         return JsonResponse(result, status=status)
 
-    def _get_user(self, username, email):
+    def _get_user_by_username(self, username):
         """
-        Helper method to return the username and email of an existing user.
+        Helper method to get user info using the username as input.
+        If it fails, then tries to get the user using the email.
         """
         try:
             existing_user = User.objects.get(username=username)
@@ -153,7 +162,8 @@ class UserManagement(APIView):
             }
             status = drf_status.HTTP_200_OK
         except ObjectDoesNotExist:
-            result, status = self._get_user_by_email(email)
+            result = {'result': 'user not found'}
+            status = drf_status.HTTP_400_BAD_REQUEST
 
         return result, status
 
