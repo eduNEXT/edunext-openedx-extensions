@@ -141,38 +141,23 @@ class UserManagement(APIView):
             result = {'result': 'username and email not given'}
             status = drf_status.HTTP_400_BAD_REQUEST
 
-        if username:
-            result, status = self._get_user_by_username(username)
-
-        if not username and email:
-            result, status = self._get_user_by_email(email)
-
+        result, status = self._get_user(**request.GET.dict())
         return JsonResponse(result, status=status)
 
-    def _get_user_by_username(self, username):
+    def _get_user(self, **kwargs):
         """
         Helper method to get user info using the username as input.
         If it fails, then tries to get the user using the email.
+        Otherwise return 'user not found'
         """
-        try:
-            existing_user = User.objects.get(username=username)
-            result = {
-                'username': existing_user.username,
-                'email': existing_user.email,
-            }
-            status = drf_status.HTTP_200_OK
-        except ObjectDoesNotExist:
-            result = {'result': 'user not found'}
-            status = drf_status.HTTP_400_BAD_REQUEST
+        username = kwargs.get('username')
+        email = kwargs.get('email')
 
-        return result, status
-
-    def _get_user_by_email(self, email):
-        """
-        Helper method to get user info using the email as input.
-        """
         try:
-            existing_user = User.objects.get(email=email)
+            if username:
+                existing_user = User.objects.get(username=username)
+            else:
+                existing_user = User.objects.get(email=email)
             result = {
                 'username': existing_user.username,
                 'email': existing_user.email,
