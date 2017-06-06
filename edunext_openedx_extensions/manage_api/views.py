@@ -4,14 +4,18 @@
 TODO: add me
 """
 import logging
+import random
 from itertools import chain
 
 from django.db import transaction
 from django.core import mail
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 from django.utils.translation import override as override_language
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.exceptions import ParseError
+from rest_framework import status as drf_status
 
 from openedx.conf import settings  # pylint: disable=import-error
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
@@ -125,6 +129,87 @@ class UserManagement(APIView):
             registration.activate()
 
         return JsonResponse({"success": True}, status=201)
+
+    def get(self, request, **kwargs):  # pylint: disable=unused-argument
+        """
+        Returns a registered edx-platform user searching by username or email
+        """
+        username = request.GET.get('username')
+        email = request.GET.get('email')
+
+        # this validation is required if the API call do not comes from enrollapi
+        if not username and not email:
+            result = {'result': 'username and email not given'}
+            status = drf_status.HTTP_400_BAD_REQUEST
+
+        result, status = self._get_or_suggest_user(**request.GET.dict())
+        return JsonResponse(result, status=status)
+
+    def _get_or_suggest_user(self, **kwargs):
+        """
+        Helper method to get user info using the username as input.
+        If it fails, then tries to get the user using the email.
+        Otherwise return 'user not found'
+        """
+        username = kwargs.get('username')
+        email = kwargs.get('email')
+
+        try:
+            if username:
+                existing_user = User.objects.get(username=username)
+            else:
+                existing_user = User.objects.get(email=email)
+            result = {
+                'username': existing_user.username,
+                'email': existing_user.email,
+            }
+            status = drf_status.HTTP_200_OK
+        except ObjectDoesNotExist:
+            result, status = self._suggest_username(**kwargs)
+
+        return result, status
+
+    def _suggest_username(self, **kwargs):
+        """
+        This method returns a suggested username for a new user
+        """
+
+        username_generators = [
+            self._generate_username_from_name
+        ]
+
+        try:
+            for generator in username_generators:
+                username_candidate = generator(**kwargs)
+                if not self._username_exists(username_candidate):
+                    result = {'suggested_username': username_candidate}
+                    status = drf_status.HTTP_200_OK
+                    break
+        except Exception:  # pylint: disable=broad-except
+            result = {'result': 'It seems first_name or last_name were not passed'}
+            status = drf_status.HTTP_400_BAD_REQUEST
+
+        return result, status
+
+    @staticmethod
+    def _username_exists(username_candidate):
+        """
+        Helper method to decide if a username is already on DB or not
+        """
+        return User.objects.filter(username=username_candidate).exists()
+
+    @staticmethod
+    def _generate_username_from_name(**kwargs):
+        """
+        Helper method to generate a username
+        """
+        first_name = kwargs.get('first_name').lower()
+        last_name = kwargs.get('last_name').lower()
+        number = random.randint(1, 5000)
+        return '{first_name}.{last_name}{number}'.format(
+            first_name=first_name,
+            last_name=last_name,
+            number=number)
 
 
 class OrgManagement(APIView):
