@@ -4,6 +4,7 @@
 TODO: add me
 """
 import logging
+import random
 from itertools import chain
 
 from django.db import transaction
@@ -141,10 +142,10 @@ class UserManagement(APIView):
             result = {'result': 'username and email not given'}
             status = drf_status.HTTP_400_BAD_REQUEST
 
-        result, status = self._get_user(**request.GET.dict())
+        result, status = self._get_or_suggest_user(**request.GET.dict())
         return JsonResponse(result, status=status)
 
-    def _get_user(self, **kwargs):
+    def _get_or_suggest_user(self, **kwargs):
         """
         Helper method to get user info using the username as input.
         If it fails, then tries to get the user using the email.
@@ -164,10 +165,51 @@ class UserManagement(APIView):
             }
             status = drf_status.HTTP_200_OK
         except ObjectDoesNotExist:
-            result = {'result': 'user not found'}
+            result, status = self._suggest_username(**kwargs)
+
+        return result, status
+
+    def _suggest_username(self, **kwargs):
+        """
+        This method returns a suggested username for a new user
+        """
+
+        username_generators = [
+            self._generate_username_from_name
+        ]
+
+        try:
+            for generator in username_generators:
+                username_candidate = generator(**kwargs)
+                if not self._username_exists(username_candidate):
+                    result = {'suggested_username': username_candidate}
+                    status = drf_status.HTTP_200_OK
+                    break
+        except Exception:  # pylint: disable=broad-except
+            result = {'result': 'It seems first_name or last_name were not passed'}
             status = drf_status.HTTP_400_BAD_REQUEST
 
         return result, status
+
+    @staticmethod
+    def _username_exists(username_candidate):
+        """
+        Helper method to decide if a username is already on DB or not
+        """
+        return User.objects.filter(username=username_candidate).exists()
+
+    @staticmethod
+    def _generate_username_from_name(**kwargs):
+        """
+        Helper method to generate a username
+        """
+        first_name = kwargs.get('first_name').lower()
+        last_name = kwargs.get('last_name').lower()
+        number = random.randint(1, 5000)
+        return '{first_name}.{last_name}{number}'.format(
+            first_name=first_name,
+            last_name=last_name,
+            number=number)
 
 
 class OrgManagement(APIView):
