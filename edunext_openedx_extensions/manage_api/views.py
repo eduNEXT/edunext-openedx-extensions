@@ -205,10 +205,16 @@ class UserManagement(APIView):
         """
         first_name = kwargs.get('first_name').lower()
         last_name = kwargs.get('last_name').lower()
+        max_characters = 12
+
+        # stripping all white spaces
+        first_name = ''.join(first_name.split())
+        last_name = ''.join(last_name.split())
+
         number = random.randint(1, 5000)
-        return '{first_name}.{last_name}{number}'.format(
-            first_name=first_name,
-            last_name=last_name,
+        return u'{first_name}.{last_name}{number}'.format(
+            first_name=first_name[:max_characters],
+            last_name=last_name[:max_characters],
             number=number)
 
 
