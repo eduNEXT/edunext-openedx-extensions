@@ -9,6 +9,11 @@ def filter_enrollments(enrollments):
     Given a list of enrollment objects, we filter out the enrollments to orgs that
     do not belong to the current microsite
     """
+
+    # If we do not have a microsite context, there is nothing we can do
+    if not microsite.is_request_in_microsite():
+        return enrollments
+
     orgs_to_include = microsite.get_value('course_org_filter')
 
     orgs_to_exclude = microsite.get_all_orgs()
