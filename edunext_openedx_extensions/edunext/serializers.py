@@ -159,6 +159,7 @@ class ProctoredExamStudentAttemptSerializer(serializers.Serializer):  # pylint: 
         source='proctored_exam.course_id',
         read_only=True)
 
+    allowed_time_limit_mins = serializers.IntegerField()
     time_taken = serializers.SerializerMethodField()
 
     def get_time_taken(self, obj):
