@@ -16,7 +16,6 @@ import threading
 
 from django.conf import settings
 
-import edxmako  # pylint: disable=import-error
 from util.url import strip_port_from_host  # pylint: disable=import-error
 
 
@@ -284,7 +283,6 @@ class BaseMicrositeBackend(InterfaceConnectionBackend):
         microsites_root = settings.MICROSITE_ROOT_DIR
 
         if os.path.isdir(microsites_root):
-            edxmako.paths.add_lookup('main', microsites_root)
             settings.STATICFILES_DIRS.insert(0, microsites_root)
             settings.LOCALE_PATHS = (microsites_root / 'conf/locale',) + settings.LOCALE_PATHS
 

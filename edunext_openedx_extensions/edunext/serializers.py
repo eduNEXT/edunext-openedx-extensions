@@ -11,11 +11,16 @@ import logging
 from django.utils.duration import duration_string
 from rest_framework import serializers
 
-from courseware import courses  # pylint: disable=import-error
-from lms.djangoapps.grades.new.course_grade import CourseGradeFactory  # pylint: disable=import-error
 from .fields import CustomRelatedField
 
 LOG = logging.getLogger(__name__)
+
+try:
+    from courseware import courses  # pylint: disable=import-error
+    from lms.djangoapps.grades.new.course_grade import CourseGradeFactory  # pylint: disable=import-error
+except ImportError, e:
+    LOG.error("One or more imports failed for `edunext.serializers`. Details on debug level.")
+    LOG.debug(e, exc_info=True)
 
 
 class MetaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
