@@ -18,7 +18,6 @@ from rest_framework.exceptions import ParseError
 from rest_framework import status as drf_status
 
 
-
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
 from microsite_configuration import microsite  # pylint: disable=import-error
@@ -122,11 +121,16 @@ class UserManagement(APIView):
             # We have to make them active for the roles to stick
             user.is_active = True
             user.save()
-
-            creator_role = OrgCourseCreatorRole(org_manager)
-            creator_role.add_users(user)
-            rerun_role = OrgRerunCreatorRole(org_manager)
-            rerun_role.add_users(user)
+            try:
+                creator_role = OrgCourseCreatorRole(org_manager)
+                creator_role.add_users(user)
+                rerun_role = OrgRerunCreatorRole(org_manager)
+                rerun_role.add_users(user)
+            except Exception:  # pylint: disable=broad-except
+                LOG.error(
+                    u'Unable to use custom role classes',
+                    exc_info=True
+                )
 
             user.is_active = False
             user.save()
