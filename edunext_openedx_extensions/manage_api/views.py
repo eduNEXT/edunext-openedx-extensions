@@ -17,25 +17,29 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.exceptions import ParseError
 from rest_framework import status as drf_status
 
-from openedx.conf import settings  # pylint: disable=import-error
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
-from student.views import _do_create_account  # pylint: disable=import-error
-from student.forms import AccountCreationForm  # pylint: disable=import-error
-from student.models import create_comments_service_user  # pylint: disable=import-error
-from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole  # pylint: disable=import-error
-from edxmako.shortcuts import render_to_string  # pylint: disable=import-error
-
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
-from util.json_request import JsonResponse  # pylint: disable=import-error
-from util.organizations_helpers import (  # pylint: disable=import-error
-    get_organizations,
-    add_organization,
-)
 from microsite_configuration import microsite  # pylint: disable=import-error
 from .utils import add_org_from_short_name
 
-LOG = logging.getLogger("edx.student")
+LOG = logging.getLogger(__name__)
+
+try:
+    from openedx.conf import settings  # pylint: disable=import-error
+    from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
+    from student.views import _do_create_account  # pylint: disable=import-error
+    from student.forms import AccountCreationForm  # pylint: disable=import-error
+    from student.models import create_comments_service_user  # pylint: disable=import-error
+    from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole  # pylint: disable=import-error
+    from edxmako.shortcuts import render_to_string  # pylint: disable=import-error
+    from util.json_request import JsonResponse  # pylint: disable=import-error
+    from util.organizations_helpers import (  # pylint: disable=import-error
+        get_organizations,
+        add_organization,
+    )
+except ImportError, exception:
+    LOG.error("One or more imports failed for manage_api. Details on debug level.")
+    LOG.debug(exception, exc_info=True)
 
 
 class UserManagement(APIView):
@@ -116,11 +120,16 @@ class UserManagement(APIView):
             # We have to make them active for the roles to stick
             user.is_active = True
             user.save()
-
-            creator_role = OrgCourseCreatorRole(org_manager)
-            creator_role.add_users(user)
-            rerun_role = OrgRerunCreatorRole(org_manager)
-            rerun_role.add_users(user)
+            try:
+                creator_role = OrgCourseCreatorRole(org_manager)
+                creator_role.add_users(user)
+                rerun_role = OrgRerunCreatorRole(org_manager)
+                rerun_role.add_users(user)
+            except Exception:  # pylint: disable=broad-except
+                LOG.error(
+                    u'Unable to use custom role classes',
+                    exc_info=True
+                )
 
             user.is_active = False
             user.save()
