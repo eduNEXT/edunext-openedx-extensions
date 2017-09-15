@@ -17,7 +17,6 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.exceptions import ParseError
 from rest_framework import status as drf_status
 
-
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
 from microsite_configuration import microsite  # pylint: disable=import-error
@@ -38,9 +37,9 @@ try:
         get_organizations,
         add_organization,
     )
-except ImportError, e:
+except ImportError, exception:
     LOG.error("One or more imports failed for manage_api. Details on debug level.")
-    LOG.debug(e, exc_info=True)
+    LOG.debug(exception, exc_info=True)
 
 
 class UserManagement(APIView):
