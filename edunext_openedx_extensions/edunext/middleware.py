@@ -64,7 +64,7 @@ class MicrositeMiddleware(object):
 
         # By this time, if there is no redirect, and no microsite, the domain is available
         if (not microsite.is_request_in_microsite() and
-                settings.FEATURES['USE_MICROSITE_AVAILABLE_SCREEN'] and
+                settings.FEATURES.get('USE_MICROSITE_AVAILABLE_SCREEN', False) and
                 not bool(HOST_VALIDATION_RE.search(domain))):
             return HttpResponseNotFound(edxmako.shortcuts.render_to_string('microsites/not_found.html', {
                 'domain': domain,
