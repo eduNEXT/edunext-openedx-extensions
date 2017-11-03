@@ -20,7 +20,7 @@ from rest_framework import status as drf_status
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
 from microsite_configuration import microsite  # pylint: disable=import-error
-from .utils import add_org_from_short_name
+from ..utils import add_org_from_short_name
 
 LOG = logging.getLogger(__name__)
 
