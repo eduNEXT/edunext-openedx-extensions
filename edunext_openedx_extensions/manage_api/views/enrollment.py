@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-TODO: add me
-"""
+# pylint: disable=missing-docstring
+
 import logging
 import random
 from itertools import chain
@@ -37,23 +36,15 @@ try:
         get_organizations,
         add_organization,
     )
-except ImportError, exception:
-    LOG.error("One or more imports failed for manage_api. Details on debug level.")
-    LOG.debug(exception, exc_info=True)
+except ImportError:
+    LOG.error("One or more imports failed for manage_api.")
 
 
 class UserManagement(APIView):
-    """
-    TODO: add me
-    """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
-        """
-        TODO: add me
-        """
         # Gather all the request data
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -227,17 +218,10 @@ class UserManagement(APIView):
 
 
 class OrgManagement(APIView):
-    """
-    TODO: add me
-    """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
-        """
-        TODO: add me
-        """
         # Gather all the request data
         organization_name = request.POST.get('organization_name')
 
@@ -246,24 +230,17 @@ class OrgManagement(APIView):
         if organization_name.lower() in (org.lower() for org in orgs_in_microsites):
             return JsonResponse("Org taken", status=409)
 
-        # TODO:
+        # TO DO:
         # Find orgs that already have courses in them and forbid those too
 
         return JsonResponse({"success": True}, status=200)
 
 
 class SubdomainManagement(APIView):
-    """
-    TODO: add me
-    """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
-        """
-        TODO: add me
-        """
         # Gather all the request data
         subdomain = request.POST.get('subdomain')
         objects = Microsite.objects.filter(  # pylint: disable=no-member
@@ -274,27 +251,15 @@ class SubdomainManagement(APIView):
 
 
 class OrganizationView(APIView):
-    """
-    TODO: add me
-    """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def get(self, request, **kwargs):  # pylint: disable=unused-argument
-        """
-        TODO: add me
-        """
-
         organizations = get_organizations()
         org_names_list = [(org["short_name"]) for org in organizations]
         return JsonResponse(org_names_list, status=200)
 
     def post(self, request, **kwargs):  # pylint: disable=unused-argument
-        """
-        TODO: add me
-        """
-
         if request.GET.get('from-short-name') == 'true':
             return self.create_from_short_name(request, **kwargs)
 
@@ -307,10 +272,6 @@ class OrganizationView(APIView):
         return JsonResponse({"short_name": new_org["short_name"]}, status=201)
 
     def create_from_short_name(self, request, **kwargs):  # pylint: disable=unused-argument
-        """
-        TODO: add me
-        """
-
         org_short_name = request.POST.get("short_name", None)
         if not org_short_name:
             # HTTP 400 response

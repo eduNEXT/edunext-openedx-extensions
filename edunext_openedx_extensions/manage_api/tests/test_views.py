@@ -72,7 +72,7 @@ class TestManageApiViews(APITestCase):
 
         self.module_patcher = patch.dict('sys.modules', modules)
         self.module_patcher.start()
-        from manage_api.views import (
+        from manage_api.views.enrollment import (
             UserManagement,
             OrgManagement,
             OrganizationView,
@@ -90,7 +90,7 @@ class TestManageApiViews(APITestCase):
 
         self.module_patcher.stop()
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_preregistered_user(self, mock_auth):
         """
         Registration for a previous registered user should not be allowed
@@ -112,7 +112,7 @@ class TestManageApiViews(APITestCase):
             {'conflict_on_fields': ['username']},
             status=409)
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_account_creation(self, mock_auth):
         """
         It should create a user account
@@ -154,7 +154,7 @@ class TestManageApiViews(APITestCase):
             {"success": True}, status=201
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_orgstaff_creation(self, mock_auth):
         """
         It should create a user account
@@ -199,7 +199,7 @@ class TestManageApiViews(APITestCase):
             {"success": True}, status=201
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_account_activation(self, mock_auth):
         """
         It should create a user account
@@ -245,7 +245,7 @@ class TestManageApiViews(APITestCase):
             {"success": True}, status=201
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_org_taken(self, mock_auth):
         """
         It should return wether the organization name is available or not
@@ -268,7 +268,7 @@ class TestManageApiViews(APITestCase):
             status=409
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_org_creation(self, mock_auth):
         """
         It should return wether the organization name is available or not
@@ -291,7 +291,7 @@ class TestManageApiViews(APITestCase):
             status=200
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_post_subdomain_list(self, mock_auth):
         """
         It should return a list of subdomains with the requested condition
@@ -314,7 +314,7 @@ class TestManageApiViews(APITestCase):
             status=200
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_get_orgs_list(self, mock_auth):
         """
         It should return a list of subdomains with the requested condition
@@ -338,7 +338,7 @@ class TestManageApiViews(APITestCase):
             status=200
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('edunext_openedx_extensions.microsite_api.authenticators.MicrositeManagerAuthentication.authenticate')
     def test_create_org_error(self, mock_auth):
         """
         It raises ParseError
