@@ -83,6 +83,12 @@ class TestManageApiViews(APITestCase):
         self.subdomainmanagement = SubdomainManagement()
         self.organizationview = OrganizationView()
 
+        from manage_api.views.users import (
+            PasswordManagement,
+        )
+        self.passwordmanagement = PasswordManagement()
+
+
     def tearDown(self):
         """
         Cleaning up
@@ -353,3 +359,18 @@ class TestManageApiViews(APITestCase):
         # assertions
         with self.assertRaises(ParseError):
             self.organizationview.create_from_short_name(request)
+
+
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
+    def test_change_password(self, mock_auth):
+        """
+        """
+        url = reverse('user_password_api')
+
+        # now running an API call
+        data = {
+        }
+
+        request = self.factory.post(url, data)
+        self.passwordmanagement.post(request)
+
