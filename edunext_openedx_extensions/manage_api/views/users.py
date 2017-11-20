@@ -5,9 +5,11 @@
 import logging
 import json
 
-from django.core.mail import send_mail
+from django.core import mail
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from django.utils.translation import override as override_language
+
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework import status as drf_status
@@ -15,14 +17,19 @@ from rest_framework import status as drf_status
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
 
+from microsite_configuration import microsite  # pylint: disable=import-error
+
 LOG = logging.getLogger(__name__)
 
 try:
+    from openedx.conf import settings  # pylint: disable=import-error
     from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
     from student.models import UserSignupSource  # pylint: disable=import-error
     from util.json_request import JsonResponse  # pylint: disable=import-error
-except ImportError:
+    from edxmako.shortcuts import render_to_string  # pylint: disable=import-error
+except ImportError, exception:
     LOG.error("One or more imports failed for manage_api. Details on debug level.")
+    LOG.debug(exception, exc_info=True)
 
 
 class PasswordManagement(APIView):
@@ -46,6 +53,7 @@ class PasswordManagement(APIView):
         email = json_data['email']
         password = json_data['password']
         microsite_key = json_data['microsite_key']
+        language = request.POST.get('language', 'en')
 
         # Check if ther username or email passed in the payload exists
         user_exists = check_account_exists(email=email, username=username)
@@ -69,20 +77,29 @@ class PasswordManagement(APIView):
                 user = User.objects.get(email=email)
             user.set_password(password)
             user.save()
-            self.send_email(user, password, signup_source)
+            self.send_email(user, password, language, signup_source)
 
             return JsonResponse({"success": True}, status=drf_status.HTTP_200_OK)
         else:
 
             return JsonResponse({"success": False}, status=drf_status.HTTP_403_FORBIDDEN)
 
-    def send_email(self, user, password, signup_source):
-        """
-        Send email if all it's correct.
-        """
-        subject = "Notificación cambio de contraseña"
-        content = "Su nueva contraseña es {}, para ingresar diríjase a {}".format(password, signup_source)
-        try:
-            send_mail(subject, content, "from@example.com", [user.email])
-        except Exception:  # pylint: disable=broad-except
-            LOG.error('Unable to send email')
+    def send_email(self, user, password, language, signup_source):
+        with override_language(language):
+            context = {
+                'password': password,
+                'signup_source': signup_source,
+            }
+            subject = render_to_string('emails/change_password_subject.txt', context)
+            subject = ''.join(subject.splitlines())
+            message = render_to_string('emails/change_password.txt', context)
+            from_address = microsite.get_value('email_from_adress', settings.DEFAULT_FROM_EMAIL)
+
+            try:
+                mail.send_mail(subject, message, from_address, [user.email])
+            except Exception:
+                LOG.error(
+                    u'Unable to send change password email notification to user from "%s"',
+                    from_address,
+                    exc_info=True
+                )
