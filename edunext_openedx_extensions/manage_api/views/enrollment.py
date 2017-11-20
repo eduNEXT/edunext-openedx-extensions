@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=missing-docstring
+"""
+This module provide four interfaces to handle the request
+sent it by enrollapi.
+"""
 
 import logging
 import random
@@ -36,16 +39,23 @@ try:
         get_organizations,
         add_organization,
     )
-except ImportError:
+except ImportError, exception:
     LOG.error("One or more imports failed for manage_api.")
+    LOG.debug(exception, exc_info=True)
 
 
 class UserManagement(APIView):
+    """
+    UserManagement handles the request to enroll an user in
+    a microsite.
+    """
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
-        # Gather all the request data
+        """
+        Gather all the request data
+        """
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -218,11 +228,16 @@ class UserManagement(APIView):
 
 
 class OrgManagement(APIView):
+    """
+    Class to check if an organization name is already taken.
+    """
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
-        # Gather all the request data
+        """
+        Gather all the request data
+        """
         organization_name = request.POST.get('organization_name')
 
         # Forbid org already defined in a microsite
@@ -237,11 +252,16 @@ class OrgManagement(APIView):
 
 
 class SubdomainManagement(APIView):
+    """
+    Returns a list of microsite with the subdomain requested.
+    """
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
-        # Gather all the request data
+        """
+        Gather all the request data
+        """
         subdomain = request.POST.get('subdomain')
         objects = Microsite.objects.filter(  # pylint: disable=no-member
             subdomain__startswith=subdomain
@@ -251,15 +271,25 @@ class SubdomainManagement(APIView):
 
 
 class OrganizationView(APIView):
+    """
+    Class to create an organization
+    """
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def get(self, request, **kwargs):  # pylint: disable=unused-argument
+        """
+        Returns organizations list.
+        """
         organizations = get_organizations()
         org_names_list = [(org["short_name"]) for org in organizations]
         return JsonResponse(org_names_list, status=200)
 
     def post(self, request, **kwargs):  # pylint: disable=unused-argument
+        """
+        Create the new organization and return with
+        the short name.
+        """
         if request.GET.get('from-short-name') == 'true':
             return self.create_from_short_name(request, **kwargs)
 
@@ -272,6 +302,10 @@ class OrganizationView(APIView):
         return JsonResponse({"short_name": new_org["short_name"]}, status=201)
 
     def create_from_short_name(self, request, **kwargs):  # pylint: disable=unused-argument
+        """
+        Create an organization with short name based on
+        the original name.
+        """
         org_short_name = request.POST.get("short_name", None)
         if not org_short_name:
             # HTTP 400 response

@@ -27,16 +27,21 @@ try:
     from student.models import UserSignupSource  # pylint: disable=import-error
     from util.json_request import JsonResponse  # pylint: disable=import-error
     from edxmako.shortcuts import render_to_string  # pylint: disable=import-error
-except ImportError, exception:
+except ImportError, exception:  # pylint: disable=broad-except
     LOG.error("One or more imports failed for manage_api. Details on debug level.")
     LOG.debug(exception, exc_info=True)
 
 
 class PasswordManagement(APIView):
     """
-    This APIView recieves from enrollapi data. Note that
-    the data is recieved in json format not form data.
+    This view change the password of an user
 
+    Parameters received:
+        1. token: of the microsite admin who is changing the password.
+        It's mandatory has a token created before in api services of Edunext.
+        2. email or username: of the user
+        3. password: the new password in plain text
+  
     Validations:
         1. If username or email passed exists
         2. SingUp source of the request with the SignUp source of user to modify
@@ -68,8 +73,8 @@ class PasswordManagement(APIView):
 
         subdomain = Microsite.objects.get(key=microsite_key).subdomain  # pylint: disable=no-member
 
-        # Validate if the microtsite from the request match with the
-        # signup source of the user to who is pretend change the password.
+        # Validate if the microsite from the request match with the
+        # signup source.
         if subdomain == signup_source:
             if username:
                 user = User.objects.get(username=username)
@@ -85,6 +90,11 @@ class PasswordManagement(APIView):
             return JsonResponse({"success": False}, status=drf_status.HTTP_403_FORBIDDEN)
 
     def send_email(self, user, password, language, signup_source):
+        """
+        If all it's correct, send notification email.
+        Templates are handles in lms/templates/email.
+        Get the from_email from microsite configuration
+        """
         with override_language(language):
             context = {
                 'password': password,
@@ -97,7 +107,7 @@ class PasswordManagement(APIView):
 
             try:
                 mail.send_mail(subject, message, from_address, [user.email])
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 LOG.error(
                     u'Unable to send change password email notification to user from "%s"',
                     from_address,
