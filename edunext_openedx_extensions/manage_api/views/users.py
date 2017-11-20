@@ -41,7 +41,7 @@ class PasswordManagement(APIView):
         It's mandatory has a token created before in api services of Edunext.
         2. email or username: of the user
         3. password: the new password in plain text
-  
+
     Validations:
         1. If username or email passed exists
         2. SingUp source of the request with the SignUp source of user to modify
