@@ -4,7 +4,10 @@
 Views unit tests for manage_api app
 """
 
+
 from mock import MagicMock, patch
+
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from rest_framework.test import APIRequestFactory, APITestCase
@@ -35,6 +38,11 @@ class TestManageApiViews(APITestCase):
             subdomain='yetanother.io'
         )
 
+        User.objects.create(  # pylint: disable=no-member
+            username='Pepe.Perez.dash',
+            email='testinguser@edunext.co'
+        )
+
         self.factory = APIRequestFactory()
 
         # Now we patch missing modules imported
@@ -44,9 +52,11 @@ class TestManageApiViews(APITestCase):
         self.student_views = MagicMock()
         self.student_models = MagicMock()
         self.student_roles = MagicMock()
+        self.manage_api = MagicMock()
         self.microsite_configuration = MagicMock()
         self.util_organizations_helpers = MagicMock()
         self.utils = MagicMock()
+        self.sendmail = MagicMock()
 
         modules = {
             'openedx': MagicMock(),
@@ -67,7 +77,7 @@ class TestManageApiViews(APITestCase):
             'util.json_request': self.json_request,
             'util.organizations_helpers': self.util_organizations_helpers,
             'microsite_configuration': self.microsite_configuration,
-            '.utils': self.utils,
+            'django.core.mail': self.sendmail
         }
 
         self.module_patcher = patch.dict('sys.modules', modules)
@@ -86,8 +96,8 @@ class TestManageApiViews(APITestCase):
         from manage_api.views.users import (
             PasswordManagement,
         )
-        self.passwordmanagement = PasswordManagement()
 
+        self.passwordmanagement = PasswordManagement()
 
     def tearDown(self):
         """
@@ -360,17 +370,31 @@ class TestManageApiViews(APITestCase):
         with self.assertRaises(ParseError):
             self.organizationview.create_from_short_name(request)
 
-
+    @patch('manage_api.views.users.signup_source_site')
+    @patch('manage_api.views.users.microsite')
     @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
-    def test_change_password(self, mock_auth):
-        """
-        """
+    def test_change_password(self, mock_auth, signup_source, microsite):
+        """It should change user's password"""
         url = reverse('user_password_api')
+        mock_auth.return_value = None
 
-        # now running an API call
         data = {
+            "username": "Pepe.Perez.dash",
+            "password": "thenewpassword",
+            "email": None,
+            "microsite_key": "key3"
         }
 
-        request = self.factory.post(url, data)
-        self.passwordmanagement.post(request)
+        # now running an API call
+        request = self.factory.post(url, data, format='json')
 
+        subdomain = Microsite.objects.get(key="key3").subdomain  # pylint: disable=no-member
+        microsite.return_value = subdomain
+        signup_source.return_value = 'yetanother.io'
+
+        microsite = microsite.return_value
+        signup_source = signup_source.return_value
+
+        self.passwordmanagement.post(request)
+        self.assertEqual(microsite, signup_source)
+        self.json_request.JsonResponse.assert_called_with({"success": True}, status=200)

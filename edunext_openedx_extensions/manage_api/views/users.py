@@ -32,9 +32,17 @@ except ImportError, exception:  # pylint: disable=broad-except
     LOG.debug(exception, exc_info=True)
 
 
+def signup_source_site(user):
+    try:
+        signup_source = UserSignupSource.objects.get(user__username=user).site
+    except ObjectDoesNotExist:
+        signup_source = UserSignupSource.objects.get(user__email=user).site
+
+    return signup_source
+
+
 class PasswordManagement(APIView):
-    """
-    This view change the password of an user
+    """This view change the password of an user
 
     Parameters received:
         1. token: of the microsite admin who is changing the password.
@@ -53,6 +61,7 @@ class PasswordManagement(APIView):
         """
         Proccess the data
         """
+
         json_data = json.loads(request.body)
         username = json_data['username']
         email = json_data['email']
@@ -66,39 +75,32 @@ class PasswordManagement(APIView):
             return JsonResponse({'response': 'User does not exists'}, status=drf_status.HTTP_409_CONFLICT)
 
         # Get the signup source of the user
-        try:
-            signup_source = UserSignupSource.objects.get(user__username=username).site
-        except ObjectDoesNotExist:
-            signup_source = UserSignupSource.objects.get(user__email=email).site
-
+        signup_source_site(username)
         subdomain = Microsite.objects.get(key=microsite_key).subdomain  # pylint: disable=no-member
 
-        # Validate if the microsite from the request match with the
-        # signup source.
-        if subdomain == signup_source:
+        # Validate if the microsite from the request match with the signup source.
+        if subdomain == signup_source_site(username):
             if username:
                 user = User.objects.get(username=username)
             if email:
                 user = User.objects.get(email=email)
+            domain = signup_source_site(username)
             user.set_password(password)
             user.save()
-            self.send_email(user, password, language, signup_source)
-
+            self.send_email(user, password, language, domain)
             return JsonResponse({"success": True}, status=drf_status.HTTP_200_OK)
         else:
-
             return JsonResponse({"success": False}, status=drf_status.HTTP_403_FORBIDDEN)
 
-    def send_email(self, user, password, language, signup_source):
+    def send_email(self, user, password, language, domain):
         """
         If all it's correct, send notification email.
-        Templates are handles in lms/templates/email.
         Get the from_email from microsite configuration
         """
         with override_language(language):
             context = {
                 'password': password,
-                'signup_source': signup_source,
+                'domain': domain,
             }
             subject = render_to_string('emails/change_password_subject.txt', context)
             subject = ''.join(subject.splitlines())
