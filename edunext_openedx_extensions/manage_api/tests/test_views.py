@@ -4,7 +4,10 @@
 Views unit tests for manage_api app
 """
 
+
 from mock import MagicMock, patch
+
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from rest_framework.test import APIRequestFactory, APITestCase
@@ -35,6 +38,11 @@ class TestManageApiViews(APITestCase):
             subdomain='yetanother.io'
         )
 
+        User.objects.create(  # pylint: disable=no-member
+            username='Pepe.Perez.dash',
+            email='testinguser@edunext.co'
+        )
+
         self.factory = APIRequestFactory()
 
         # Now we patch missing modules imported
@@ -44,9 +52,11 @@ class TestManageApiViews(APITestCase):
         self.student_views = MagicMock()
         self.student_models = MagicMock()
         self.student_roles = MagicMock()
+        self.manage_api = MagicMock()
         self.microsite_configuration = MagicMock()
         self.util_organizations_helpers = MagicMock()
         self.utils = MagicMock()
+        self.sendmail = MagicMock()
 
         modules = {
             'openedx': MagicMock(),
@@ -67,12 +77,12 @@ class TestManageApiViews(APITestCase):
             'util.json_request': self.json_request,
             'util.organizations_helpers': self.util_organizations_helpers,
             'microsite_configuration': self.microsite_configuration,
-            '.utils': self.utils,
+            'django.core.mail': self.sendmail
         }
 
         self.module_patcher = patch.dict('sys.modules', modules)
         self.module_patcher.start()
-        from manage_api.views import (
+        from manage_api.views.enrollment import (
             UserManagement,
             OrgManagement,
             OrganizationView,
@@ -83,6 +93,12 @@ class TestManageApiViews(APITestCase):
         self.subdomainmanagement = SubdomainManagement()
         self.organizationview = OrganizationView()
 
+        from manage_api.views.users import (
+            PasswordManagement,
+        )
+
+        self.passwordmanagement = PasswordManagement()
+
     def tearDown(self):
         """
         Cleaning up
@@ -90,7 +106,7 @@ class TestManageApiViews(APITestCase):
 
         self.module_patcher.stop()
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_preregistered_user(self, mock_auth):
         """
         Registration for a previous registered user should not be allowed
@@ -112,7 +128,7 @@ class TestManageApiViews(APITestCase):
             {'conflict_on_fields': ['username']},
             status=409)
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_account_creation(self, mock_auth):
         """
         It should create a user account
@@ -154,7 +170,7 @@ class TestManageApiViews(APITestCase):
             {"success": True}, status=201
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_orgstaff_creation(self, mock_auth):
         """
         It should create a user account
@@ -199,7 +215,7 @@ class TestManageApiViews(APITestCase):
             {"success": True}, status=201
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_account_activation(self, mock_auth):
         """
         It should create a user account
@@ -245,7 +261,7 @@ class TestManageApiViews(APITestCase):
             {"success": True}, status=201
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_org_taken(self, mock_auth):
         """
         It should return wether the organization name is available or not
@@ -268,7 +284,7 @@ class TestManageApiViews(APITestCase):
             status=409
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_org_creation(self, mock_auth):
         """
         It should return wether the organization name is available or not
@@ -291,7 +307,7 @@ class TestManageApiViews(APITestCase):
             status=200
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_post_subdomain_list(self, mock_auth):
         """
         It should return a list of subdomains with the requested condition
@@ -314,7 +330,7 @@ class TestManageApiViews(APITestCase):
             status=200
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_get_orgs_list(self, mock_auth):
         """
         It should return a list of subdomains with the requested condition
@@ -338,7 +354,7 @@ class TestManageApiViews(APITestCase):
             status=200
         )
 
-    @patch('manage_api.views.MicrositeManagerAuthentication.authenticate')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
     def test_create_org_error(self, mock_auth):
         """
         It raises ParseError
@@ -353,3 +369,32 @@ class TestManageApiViews(APITestCase):
         # assertions
         with self.assertRaises(ParseError):
             self.organizationview.create_from_short_name(request)
+
+    @patch('manage_api.views.users.signup_source_site')
+    @patch('manage_api.views.users.microsite')
+    @patch('manage_api.views.enrollment.MicrositeManagerAuthentication.authenticate')
+    def test_change_password(self, mock_auth, signup_source, microsite):
+        """It should change user's password"""
+        url = reverse('user_password_api')
+        mock_auth.return_value = None
+
+        data = {
+            "username": "Pepe.Perez.dash",
+            "password": "thenewpassword",
+            "email": None,
+            "microsite_key": "key3"
+        }
+
+        # now running an API call
+        request = self.factory.post(url, data, format='json')
+
+        subdomain = Microsite.objects.get(key="key3").subdomain  # pylint: disable=no-member
+        microsite.return_value = subdomain
+        signup_source.return_value = 'yetanother.io'
+
+        microsite = microsite.return_value
+        signup_source = signup_source.return_value
+
+        self.passwordmanagement.post(request)
+        self.assertEqual(microsite, signup_source)
+        self.json_request.JsonResponse.assert_called_with({"success": True}, status=200)

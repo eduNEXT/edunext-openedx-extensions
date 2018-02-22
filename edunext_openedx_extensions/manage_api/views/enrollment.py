@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-TODO: add me
+This module provide four interfaces to handle the request
+sent it by enrollapi.
 """
+
 import logging
 import random
 from itertools import chain
@@ -20,7 +22,7 @@ from rest_framework import status as drf_status
 from edunext_openedx_extensions.microsite_api.authenticators import MicrositeManagerAuthentication
 from edunext_openedx_extensions.ednx_microsites.models import Microsite
 from microsite_configuration import microsite  # pylint: disable=import-error
-from .utils import add_org_from_short_name
+from ..utils import add_org_from_short_name
 
 LOG = logging.getLogger(__name__)
 
@@ -38,23 +40,22 @@ try:
         add_organization,
     )
 except ImportError, exception:
-    LOG.error("One or more imports failed for manage_api. Details on debug level.")
+    LOG.error("One or more imports failed for manage_api.")
     LOG.debug(exception, exc_info=True)
 
 
 class UserManagement(APIView):
     """
-    TODO: add me
+    UserManagement handles the request to enroll an user in
+    a microsite.
     """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
         """
-        TODO: add me
+        Gather all the request data
         """
-        # Gather all the request data
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -228,17 +229,15 @@ class UserManagement(APIView):
 
 class OrgManagement(APIView):
     """
-    TODO: add me
+    Class to check if an organization name is already taken.
     """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
         """
-        TODO: add me
+        Gather all the request data
         """
-        # Gather all the request data
         organization_name = request.POST.get('organization_name')
 
         # Forbid org already defined in a microsite
@@ -246,7 +245,7 @@ class OrgManagement(APIView):
         if organization_name.lower() in (org.lower() for org in orgs_in_microsites):
             return JsonResponse("Org taken", status=409)
 
-        # TODO:
+        # TO DO:
         # Find orgs that already have courses in them and forbid those too
 
         return JsonResponse({"success": True}, status=200)
@@ -254,17 +253,15 @@ class OrgManagement(APIView):
 
 class SubdomainManagement(APIView):
     """
-    TODO: add me
+    Returns a list of microsite with the subdomain requested.
     """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
         """
-        TODO: add me
+        Gather all the request data
         """
-        # Gather all the request data
         subdomain = request.POST.get('subdomain')
         objects = Microsite.objects.filter(  # pylint: disable=no-member
             subdomain__startswith=subdomain
@@ -275,26 +272,24 @@ class SubdomainManagement(APIView):
 
 class OrganizationView(APIView):
     """
-    TODO: add me
+    Class to create an organization
     """
-
     authentication_classes = (MicrositeManagerAuthentication,)
     renderer_classes = [JSONRenderer]
 
     def get(self, request, **kwargs):  # pylint: disable=unused-argument
         """
-        TODO: add me
+        Returns organizations list.
         """
-
         organizations = get_organizations()
         org_names_list = [(org["short_name"]) for org in organizations]
         return JsonResponse(org_names_list, status=200)
 
     def post(self, request, **kwargs):  # pylint: disable=unused-argument
         """
-        TODO: add me
+        Create the new organization and return with
+        the short name.
         """
-
         if request.GET.get('from-short-name') == 'true':
             return self.create_from_short_name(request, **kwargs)
 
@@ -308,9 +303,9 @@ class OrganizationView(APIView):
 
     def create_from_short_name(self, request, **kwargs):  # pylint: disable=unused-argument
         """
-        TODO: add me
+        Create an organization with short name based on
+        the original name.
         """
-
         org_short_name = request.POST.get("short_name", None)
         if not org_short_name:
             # HTTP 400 response
