@@ -30,7 +30,7 @@ try:
     from student.views import _do_create_account  # pylint: disable=import-error
     from student.forms import AccountCreationForm  # pylint: disable=import-error
     from student.models import create_comments_service_user  # pylint: disable=import-error
-    from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole  # pylint: disable=import-error
+    from student.roles import OrgStaffRole  # pylint: disable=import-error
     from edxmako.shortcuts import render_to_string  # pylint: disable=import-error
     from util.json_request import JsonResponse  # pylint: disable=import-error
     from util.organizations_helpers import (  # pylint: disable=import-error
@@ -88,7 +88,11 @@ class UserManagement(APIView):
         if send_email:
             with override_language(language):
                 context = {
-                    'name': profile.name,
+                    'platform_name': "platform_name",
+                    'site': "site",
+                    'support_url': "support_url",
+                    'support_email': "support_email",
+                    'lms_url': "lms_url",
                     'key': registration.activation_key,
                 }
 
@@ -121,10 +125,8 @@ class UserManagement(APIView):
             user.is_active = True
             user.save()
             try:
-                creator_role = OrgCourseCreatorRole(org_manager)
+                creator_role = OrgStaffRole(org_manager)
                 creator_role.add_users(user)
-                rerun_role = OrgRerunCreatorRole(org_manager)
-                rerun_role.add_users(user)
             except Exception:  # pylint: disable=broad-except
                 LOG.error(
                     u'Unable to use custom role classes',
