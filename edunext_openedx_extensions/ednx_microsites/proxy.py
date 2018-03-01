@@ -11,9 +11,14 @@ with:
 from openedx.conf import settings
 
 """
+import logging
+
 from django.conf import settings as base_settings
 
-from microsite_configuration import microsite  # pylint: disable=import-error
+try:
+    from microsite_configuration import microsite  # pylint: disable=import-error
+except ImportError as error:
+    logging.getLogger(__name__).error(error.__class__.__name__ + ": " + error.message)
 
 
 class MicrositeAwareSettings(object):
