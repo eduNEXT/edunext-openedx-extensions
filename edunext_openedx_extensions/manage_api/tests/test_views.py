@@ -193,7 +193,8 @@ class TestManageApiViews(APITestCase):
             tos_required=False)
         self.student_views._do_create_account.assert_called()
         self.student_models.create_comments_service_user.assert_called()
-        self.student_roles.OrgStaffRole.assert_called()
+        self.student_roles.OrgCourseCreatorRole.assert_called()
+        self.student_roles.OrgRerunCreatorRole.assert_called()
         self.json_request.JsonResponse.assert_called_with(
             {"success": True}, status=201
         )
