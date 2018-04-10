@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 try:
     from openedx.conf import settings  # pylint: disable=import-error
     from openedx.core.djangoapps.user_api.accounts.api import check_account_exists  # pylint: disable=import-error
-    from student.views import _do_create_account  # pylint: disable=import-error
+    from student.views import _do_create_account, generate_activation_email_context  # pylint: disable=import-error
     from student.forms import AccountCreationForm  # pylint: disable=import-error
     from student.models import create_comments_service_user  # pylint: disable=import-error
     from student.roles import OrgRerunCreatorRole, OrgCourseCreatorRole  # pylint: disable=import-error
@@ -81,17 +81,13 @@ class UserManagement(APIView):
                 data=data,
                 tos_required=False,
             )
-            (user, profile, registration) = _do_create_account(form)
+            (user, profile, registration) = _do_create_account(form)  # pylint: disable=unused-variable
 
         create_comments_service_user(user)
 
         if send_email:
             with override_language(language):
-                context = {
-                    'name': profile.name,
-                    'key': registration.activation_key,
-                }
-
+                context = generate_activation_email_context(user, registration)
                 # composes activation email
                 subject = render_to_string('emails/activation_email_subject.txt', context)
                 subject = ''.join(subject.splitlines())
