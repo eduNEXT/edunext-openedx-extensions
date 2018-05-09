@@ -13,6 +13,7 @@ import re
 from django.conf import settings
 from django.http import Http404
 
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from microsite_configuration import microsite  # pylint: disable=import-error
 
@@ -70,7 +71,10 @@ class MicrositeCrossBrandingFilterMiddleware():
             return None
 
         course_id = matched_regex.group('course_id')
-        course_key = CourseKey.from_string(course_id)
+        try:
+            course_key = CourseKey.from_string(course_id)
+        except InvalidKeyError:
+            raise Http404
 
         # If the course org is the same as the current microsite
         org_filter = microsite.get_value('course_org_filter', set([]))
