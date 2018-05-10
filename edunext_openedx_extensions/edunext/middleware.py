@@ -2,6 +2,7 @@
 Middleware for microsite redirections at edunext
 """
 import re
+import logging
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -17,6 +18,7 @@ from microsite_configuration import microsite  # pylint: disable=import-error
 from .models import Redirection
 
 HOST_VALIDATION_RE = re.compile(r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{2,5})?$")
+LOG = logging.getLogger(__name__)
 
 
 class MicrositeMiddleware(object):
@@ -92,28 +94,36 @@ class PathRedirectionMiddleware(object):
         This middleware processes the path of every request and determines if there
         is a configured action to take.
         """
-        if microsite.has_override_value("EDNX_CUSTOM_PATH_REDIRECTS"):
-            redirects = microsite.get_value("EDNX_CUSTOM_PATH_REDIRECTS", {})
+        if not microsite.has_override_value("EDNX_CUSTOM_PATH_REDIRECTS"):
+            return
 
-            for regex, values in redirects.iteritems():
+        redirects = microsite.get_value("EDNX_CUSTOM_PATH_REDIRECTS", {})
 
-                if isinstance(values, dict):
-                    key = next(iter(values))
-                else:
-                    key = values
+        for regex, values in redirects.iteritems():
 
-                path = request.path_info
-                regex_path_match = re.compile(regex.format(
-                    COURSE_ID_PATTERN=settings.COURSE_ID_PATTERN,
-                    USERNAME_PATTERN=settings.USERNAME_PATTERN,
-                ))
+            if isinstance(values, dict):
+                key = next(iter(values))
+            else:
+                key = values
 
-                if regex_path_match.match(path):
-                    try:
-                        action = getattr(self, key)
-                        return action(request=request, key=key, values=values, path=path)
-                    except AttributeError:
-                        return
+            path = request.path_info
+            regex_path_match = re.compile(regex.format(
+                COURSE_ID_PATTERN=settings.COURSE_ID_PATTERN,
+                USERNAME_PATTERN=settings.USERNAME_PATTERN,
+            ))
+
+            if regex_path_match.match(path):
+                try:
+                    action = getattr(self, key)
+                    return action(request=request, key=key, values=values, path=path)
+                except Http404:  # we expect 404 to be raised
+                    raise
+                except Exception, error:  # pylint: disable=broad-except
+                    LOG.error("The PathRedirectionMiddleware generated an error at: %s%s",
+                              request.get_host(),
+                              request.get_full_path())
+                    LOG.error(error)
+                    return
 
     def login_required(self, request, path, **kwargs):  # pylint: disable=unused-argument
         """
